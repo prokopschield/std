@@ -1,12 +1,15 @@
 {
 	"name": "ps-std",
 	"description": "Standard library.",
-	"version": "0.1.0-2",
+	"version": "0.1.0-3",
 	"main": "lib/index.js",
 	"author": "Prokop Schield",
 	"license": "GPL-3.0-or-later",
 	"devDependencies": {
 		"@types/node": ">=14"
+	},
+	"scripts": {
+		"test": "nslibmgr test"
 	},
 	"keywords": []
 }
