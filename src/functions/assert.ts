@@ -13,12 +13,6 @@ export default assert;
 module.exports = assert;
 
 Object.defineProperties(assert, {
-	default: {
-		value: assert,
-		enumerable: false,
-	},
-	assert: {
-		value: assert,
-		enumerable: false,
-	},
+	default: { get: () => assert },
+	assert: { get: () => assert },
 });
