@@ -1,4 +1,5 @@
 export { Generator } from './classes/Generator';
+export { Queue } from './classes/Queue';
 
 export { assert } from './functions/assert';
 export { delay } from './functions/delay';
