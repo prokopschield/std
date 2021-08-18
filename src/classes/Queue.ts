@@ -5,6 +5,10 @@ export class Queue {
 	working = false;
 	/** Queued callbacks */
 	queue = Array<Callback>();
+	/** Call next() after call stack resolved */
+	next_async() {
+		setTimeout(() => this.next());
+	}
 	/** Call the next callback */
 	next() {
 		const next = this.queue.shift();
