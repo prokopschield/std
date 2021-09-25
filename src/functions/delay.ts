@@ -1,5 +1,5 @@
 /** milliseconds */
-export type ms = string | number | BigInt;
+export type ms = string | number | bigint;
 
 /**
  * Wait for (length) milliseconds.
@@ -10,7 +10,6 @@ export async function delay(len: ms) {
 }
 
 export default delay;
-module.exports = delay;
 
 Object.defineProperties(delay, {
 	default: { get: () => delay },

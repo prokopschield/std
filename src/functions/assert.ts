@@ -10,7 +10,6 @@ export function assert(testcase: any) {
 }
 
 export default assert;
-module.exports = assert;
 
 Object.defineProperties(assert, {
 	default: { get: () => assert },

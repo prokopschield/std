@@ -122,7 +122,6 @@ export class PsGenerator<type> implements Generator<type, type, type> {
 }
 
 export default PsGenerator;
-module.exports = PsGenerator;
 
 export { PsGenerator as Generator };
 

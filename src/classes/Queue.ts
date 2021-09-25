@@ -30,7 +30,6 @@ export class Queue {
 }
 
 export default Queue;
-module.exports = Queue;
 
 Object.defineProperties(Queue, {
 	default: { get: () => Queue },
