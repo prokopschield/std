@@ -95,3 +95,10 @@ export function protect<T extends ObjFn>(obj: T): T {
 	});
 	return proxy;
 }
+
+export default protect;
+
+Object.defineProperties(protect, {
+	default: { get: () => protect },
+	protect: { get: () => protect },
+});
