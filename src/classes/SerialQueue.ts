@@ -1,8 +1,14 @@
 import { Queue } from './Queue';
+import type { Callback } from './Queue';
 
 export class SerialQueue implements Queue {
+	error_handler?: Callback;
+	constructor(error_handler: Callback) {
+		this.error_handler = error_handler;
+		this._queue = new Queue(error_handler);
+	}
 	/** Internal queue object */
-	_queue = new Queue();
+	_queue: Queue;
 	/** Internal queue array */
 	get queue() {
 		return this._queue.queue;
@@ -35,7 +41,13 @@ export class SerialQueue implements Queue {
 				this._queue.add(async () => {
 					try {
 						await cb();
-					} catch (e) {}
+					} catch (error) {
+						if (this.error_handler) {
+							this.error_handler(error);
+						} else {
+							throw error;
+						}
+					}
 					self.next_async();
 				});
 			}

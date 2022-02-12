@@ -1,6 +1,10 @@
-type Callback = (val?: any) => void;
+export type Callback = (val?: any) => void;
 
 export class Queue {
+	error_handler?: Callback;
+	constructor(error_handler?: Callback) {
+		this.error_handler = error_handler;
+	}
 	/** Is a process ongoing? */
 	working = false;
 	/** Queued callbacks */
@@ -12,7 +16,15 @@ export class Queue {
 	/** Call the next callback */
 	next() {
 		const next = this.queue.shift();
-		return next ? next() : (this.working = false);
+		try {
+			return next ? next() : (this.working = false);
+		} catch (error) {
+			if (this.error_handler) {
+				this.error_handler(error);
+			} else {
+				throw error;
+			}
+		}
 	}
 	/** Add a callback */
 	add(cb: Callback) {
