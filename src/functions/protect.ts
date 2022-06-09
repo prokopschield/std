@@ -49,7 +49,7 @@ export function protect<T extends ObjFn>(obj: T): T {
 				if (value !== undefined) {
 					return value;
 				}
-			} catch (error) {}
+			} catch {}
 			const value = real[p];
 			if (typeof value === 'object' || typeof value === 'function') {
 				return protect(value);
