@@ -1,4 +1,5 @@
 export { Generator } from './classes/Generator';
+export { ProceduralQueue } from './classes/ProceduralQueue';
 export { Queue } from './classes/Queue';
 export { SerialQueue } from './classes/SerialQueue';
 
