@@ -57,7 +57,7 @@ export class PsGenerator<type> implements Generator<type, type, type> {
 			while (!left.done || !right.done) {
 				if (left.value !== undefined) {
 					if (right.value !== undefined) {
-						if (comparing_fn(left.value, right.value) > 0) {
+						if (Number(comparing_fn(left.value, right.value)) > 0) {
 							let new_right = yield right.value;
 							if (new_right === undefined) {
 								right = second.next();
