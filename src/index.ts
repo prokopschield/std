@@ -1,3 +1,4 @@
+export { CounterMap } from './classes/CounterMap';
 export { Generator } from './classes/Generator';
 export { ProceduralQueue } from './classes/ProceduralQueue';
 export { Queue } from './classes/Queue';
