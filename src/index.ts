@@ -10,4 +10,5 @@ export { delay } from './functions/delay';
 export { protect } from './functions/protect';
 export { sanitizeHeaders } from './functions/sanitizeHeaders';
 export { sanitizeRecord } from './functions/sanitizeRecord';
+export { shellEscape } from './functions/shellEscape';
 export { timestamp } from './functions/timestamp';
