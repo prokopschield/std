@@ -1,5 +1,6 @@
 export { CounterMap } from './classes/CounterMap';
 export { Generator } from './classes/Generator';
+export { Lock } from './classes/Lock';
 export { ProceduralQueue } from './classes/ProceduralQueue';
 export { Queue } from './classes/Queue';
 export { SerialQueue } from './classes/SerialQueue';
