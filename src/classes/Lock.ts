@@ -45,6 +45,11 @@ export class Lock {
 		}
 	}
 
+	/** Alias of .unlock() */
+	release() {
+		return this.unlock();
+	}
+
 	/** Gets a promise which resolves when this lock is unlocke. */
 	get promise(): Promise<void> {
 		return new Promise<void>((resolve) =>
