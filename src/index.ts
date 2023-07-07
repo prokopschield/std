@@ -11,6 +11,7 @@ export { cacheFn } from './functions/cacheFn';
 export { delay } from './functions/delay';
 export { pick } from './functions/pick';
 export { protect } from './functions/protect';
+export { readRecord } from './functions/readRecord';
 export { sanitizeHeaders } from './functions/sanitizeHeaders';
 export { sanitizeRecord } from './functions/sanitizeRecord';
 export { shellEscape } from './functions/shellEscape';
