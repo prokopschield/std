@@ -9,6 +9,7 @@ export { SerialQueue } from './classes/SerialQueue';
 export { assert } from './functions/assert';
 export { cacheFn } from './functions/cacheFn';
 export { delay } from './functions/delay';
+export { omit } from './functions/omit';
 export { pick } from './functions/pick';
 export { protect } from './functions/protect';
 export { readRecord } from './functions/readRecord';
