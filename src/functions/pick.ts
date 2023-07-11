@@ -16,11 +16,9 @@ export function pick<T extends Record<keyof any, any>, K extends keyof T>(
 	return returnValue;
 }
 
-
 export default pick;
 
 Object.defineProperties(pick, {
 	default: { get: () => pick },
 	pick: { get: () => pick },
 });
-
