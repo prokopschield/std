@@ -35,7 +35,7 @@ export class Lock {
 				await delay(1);
 			}
 
-			if (this._parent) {
+			if (this._parent && this._counter === 0) {
 				if (this._parent._counter <= 1) {
 					this._parent.unlock();
 				} else {
