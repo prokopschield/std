@@ -8,6 +8,10 @@ export { SerialQueue } from './classes/SerialQueue';
 
 export { assert } from './functions/assert';
 export { cacheFn } from './functions/cacheFn';
+export { declareGlobal } from './functions/declareGlobal';
+export { declareGlobalProperty } from './functions/declareGlobalProperty';
+export { defineGlobal } from './functions/defineGlobal';
+export { defineGlobalProperty } from './functions/defineGlobalProperty';
 export { delay } from './functions/delay';
 export { omit } from './functions/omit';
 export { pick } from './functions/pick';
