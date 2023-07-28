@@ -4,8 +4,12 @@
  * @param testcase any value
  * @returns true
  */
-export function assert(testcase: any, message: string = 'Assertion failed.') {
+export function assert(
+	testcase: any,
+	message: string = 'Assertion failed.'
+): asserts testcase {
 	if (!testcase) throw new Error(message);
+	// @ts-ignore
 	else return true;
 }
 
