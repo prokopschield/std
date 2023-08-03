@@ -5,6 +5,7 @@ export { ProceduralQueue } from './classes/ProceduralQueue';
 export { Queue } from './classes/Queue';
 export { Semaphore } from './classes/Semaphore';
 export { SerialQueue } from './classes/SerialQueue';
+export { SetMap } from './classes/SetMap';
 
 export { assert } from './functions/assert';
 export { cacheFn } from './functions/cacheFn';
