@@ -31,8 +31,9 @@ export function filterUsername(
 		.toLowerCase()
 		.replace(/[^a-z0-9]/g, ' ')
 		.trim()
-		.replace(/[^a-z0-9]/g, replacement)
-		.slice(0, length);
+		.slice(0, length)
+		.trim()
+		.replace(/[^a-z0-9]/g, replacement);
 }
 
 export default filterUsername;
