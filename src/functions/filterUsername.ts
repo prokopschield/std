@@ -5,7 +5,11 @@
  * @returns the shortened string
  * @warning diacritic filtering may be modified in a patch version
  */
-export function filterUsername(input: string, length = 16): string {
+export function filterUsername(
+	input: string,
+	length = 16,
+	replacement = ''
+): string {
 	return input
 		.normalize('NFD')
 		.replace(/[\u0300-\u036f]/g, '')
@@ -25,7 +29,9 @@ export function filterUsername(input: string, length = 16): string {
 		.replace(/[žźżŽžŹźŻżẓŽŹŻẒ]/g, 'z')
 		.replace(/[ẞß]/g, 'ss')
 		.toLowerCase()
-		.replace(/[^a-z0-9]/g, '')
+		.replace(/[^a-z0-9]/g, ' ')
+		.trim()
+		.replace(/[^a-z0-9]/g, replacement)
 		.slice(0, length);
 }
 
