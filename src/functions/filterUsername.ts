@@ -29,11 +29,11 @@ export function filterUsername(
 		.replace(/[žźżŽžŹźŻżẓŽŹŻẒ]/g, 'z')
 		.replace(/[ẞß]/g, 'ss')
 		.toLowerCase()
-		.replace(/[^a-z0-9]/g, ' ')
+		.replace(/[^a-z0-9]+/g, ' ')
 		.trim()
 		.slice(0, length)
 		.trim()
-		.replace(/[^a-z0-9]/g, replacement);
+		.replace(/ +/g, replacement);
 }
 
 export default filterUsername;
