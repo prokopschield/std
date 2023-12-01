@@ -8,6 +8,7 @@ export { SerialQueue } from './classes/SerialQueue';
 export { SetMap } from './classes/SetMap';
 
 export { assert } from './functions/assert';
+export { cacheAsyncFn } from './functions/cacheAsyncFn';
 export { cacheFn } from './functions/cacheFn';
 export { declareGlobal } from './functions/declareGlobal';
 export { declareGlobalProperty } from './functions/declareGlobalProperty';
