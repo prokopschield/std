@@ -70,6 +70,21 @@ export class Lock {
 
 		return this.lock();
 	}
+
+	/**
+	 * Attempt to lock synchronously (if not locked)
+	 * @returns a Lock upon success, does not throw on failure
+	 */
+	try_lock_sync(): Lock | void {
+		if (!this._counter) {
+			return this.lock();
+		}
+	}
+
+	/** @returns `>= 1` if lock is locked, `0` otherwise */
+	get locked() {
+		return this._counter;
+	}
 }
 
 export default Lock;
