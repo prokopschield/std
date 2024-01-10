@@ -1,6 +1,4 @@
 import delay from '../functions/delay';
-import makeUnawaitable from '../functions/makeUnawaitable';
-import type { Unawaitable } from '../functions/unawaitable';
 
 export class Lock {
 	protected _callbacks = new Array<Function>();
@@ -17,14 +15,14 @@ export class Lock {
 	 * Locks this lock, unlock the returned lock once you're done with this resource.
 	 * @returns a new lock
 	 */
-	lock(): Unawaitable<Lock> {
+	lock(): Lock {
 		if (this._parent && this._counter === 0) {
 			this._parent.lock();
 		}
 
 		this._counter++;
 
-		return makeUnawaitable(new Lock(this, 1));
+		return new Lock(this, 1);
 	}
 
 	/** Unlocks this lock. */
@@ -59,20 +57,13 @@ export class Lock {
 		);
 	}
 
-	/** executes callback after lock unlocked */
-	async then(callback: (self: Unawaitable<Lock>) => any) {
-		await this.promise;
-
-		return callback(makeUnawaitable(this));
-	}
-
 	/** Will be called when the lock is unlocked. */
 	set callback(callback: Function) {
 		this._callbacks.push(callback);
 	}
 
 	/** Waits for this lock to be unlocked, then locks. */
-	async wait_and_lock(): Promise<Unawaitable<Lock>> {
+	async wait_and_lock(): Promise<Lock> {
 		while (this._counter) {
 			await this.promise;
 		}
@@ -84,7 +75,7 @@ export class Lock {
 	 * Attempt to lock synchronously (if not locked)
 	 * @returns a Lock upon success, does not throw on failure
 	 */
-	try_lock_sync(): Unawaitable<Lock> | void {
+	try_lock_sync(): Lock | void {
 		if (!this._counter) {
 			return this.lock();
 		}
