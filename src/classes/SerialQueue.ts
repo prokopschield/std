@@ -58,6 +58,12 @@ export class SerialQueue implements Queue {
 		const self = this;
 		return new Promise((resolve) => self.add(resolve));
 	}
+
+	/** executes callback after queue empty, does not lock queue */
+	then(callback: () => any) {
+		return this.promise.then(callback);
+	}
+
 	protected _done: Promise<void> | undefined;
 	protected _donecb: () => void = () => {};
 	get done() {

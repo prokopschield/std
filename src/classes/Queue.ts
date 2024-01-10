@@ -1,3 +1,5 @@
+import delay from '../functions/delay';
+
 export type Callback = (val?: any) => void;
 
 export class Queue {
@@ -38,6 +40,19 @@ export class Queue {
 	/** Get a promise */
 	get promise() {
 		return new Promise((resolve) => this.add(resolve));
+	}
+
+	/** executes callback after queue empty, does not lock queue */
+	async then(callback: () => any) {
+		for (; ; await delay(7)) {
+			await this.promise.then(() => this.next());
+
+			if (this.working) {
+				continue;
+			} else {
+				return callback();
+			}
+		}
 	}
 }
 

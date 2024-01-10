@@ -50,11 +50,16 @@ export class Lock {
 		return this.unlock();
 	}
 
-	/** Gets a promise which resolves when this lock is unlocke. */
+	/** Gets a promise which resolves when this lock is unlocked. */
 	get promise(): Promise<void> {
 		return new Promise<void>((resolve) =>
 			this._counter ? this._callbacks.push(resolve) : resolve()
 		);
+	}
+
+	/** executes callback after lock unlocked */
+	then(callback: () => any) {
+		return this.promise.then(callback);
 	}
 
 	/** Will be called when the lock is unlocked. */
