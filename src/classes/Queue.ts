@@ -1,4 +1,5 @@
 import delay from '../functions/delay';
+import makeUnawaitable from '../functions/makeUnawaitable';
 
 export type Callback = (val?: any) => void;
 
@@ -43,14 +44,14 @@ export class Queue {
 	}
 
 	/** executes callback after queue empty, does not lock queue */
-	async then(callback: () => any) {
+	async then(callback: (self: Queue) => any) {
 		for (; ; await delay(7)) {
 			await this.promise.then(() => this.next());
 
 			if (this.working) {
 				continue;
 			} else {
-				return callback();
+				return callback(makeUnawaitable(this));
 			}
 		}
 	}

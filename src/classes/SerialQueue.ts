@@ -1,5 +1,6 @@
 import { Queue } from './Queue';
 import type { Callback } from './Queue';
+import makeUnawaitable from '../functions/makeUnawaitable';
 
 export class SerialQueue implements Queue {
 	error_handler?: Callback;
@@ -60,8 +61,10 @@ export class SerialQueue implements Queue {
 	}
 
 	/** executes callback after queue empty, does not lock queue */
-	then(callback: () => any) {
-		return this.promise.then(callback);
+	async then(callback: (self: SerialQueue) => any) {
+		await this.promise;
+
+		return callback(makeUnawaitable(this));
 	}
 
 	protected _done: Promise<void> | undefined;
