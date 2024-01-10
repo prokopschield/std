@@ -6,7 +6,7 @@ export type ms = string | number | bigint;
  * @param {number | bigint | string} len Delay length in milliseconds
  */
 export async function delay(len: ms) {
-	await new Promise((resolve) => setTimeout(resolve, +`${len}` || 0));
+	await new Promise((resolve) => setTimeout(resolve, Number(len) || 0));
 }
 
 export default delay;
