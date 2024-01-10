@@ -28,8 +28,7 @@ module.exports = function () {
 	assert('fizz' in C);
 	assert(!('fizz' in c));
 	assert(
-		Object.getOwnPropertyNames(C).length >
-			Object.getOwnPropertyNames(c).length
+		Object.getOwnPropertyNames(C).length > Object.getOwnPropertyNames(c).length,
 	);
 	assert(Object.setPrototypeOf(B, A));
 	assert(Object.getPrototypeOf(B) === A);
