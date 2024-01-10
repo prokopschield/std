@@ -1,4 +1,5 @@
 import { delay, ms } from './delay';
+import type { Unawaitable } from './unawaitable';
 
 /**
  * Temporarely mutates argument to prevent .then() recursion.
@@ -9,7 +10,7 @@ import { delay, ms } from './delay';
 export function makeUnawaitable<T extends object>(
 	argument: T,
 	timeout: ms = 200
-): T {
+): Unawaitable<T> {
 	const current_then = Object.getOwnPropertyDescriptor(argument, 'then');
 
 	Object.defineProperty(argument, 'then', {
@@ -26,7 +27,7 @@ export function makeUnawaitable<T extends object>(
 		}
 	});
 
-	return argument;
+	return argument as Unawaitable<T>;
 }
 
 export default makeUnawaitable;

@@ -1,5 +1,7 @@
 import { delay, ms } from './delay';
 
+export type Unawaitable<T extends object> = Omit<T, 'then'> & { then: never };
+
 /**
  * Wraps an object in a protective coating that prevents .then() recursion.
  * @param argument object to be wrapped
@@ -9,7 +11,7 @@ import { delay, ms } from './delay';
 export function unawaitable<T extends object>(
 	argument: T,
 	timeout: ms = 200
-): T {
+): Unawaitable<T> {
 	const value = Object.setPrototypeOf({ then: undefined }, argument);
 
 	delay(timeout).then(() => {
