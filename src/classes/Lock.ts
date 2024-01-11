@@ -50,6 +50,11 @@ export class Lock {
 		return this.unlock();
 	}
 
+	/** release lock after {delay=0} ms */
+	release_async(delay = 0) {
+		setTimeout(() => this.release(), delay);
+	}
+
 	/** Gets a promise which resolves when this lock is unlocked. */
 	get promise(): Promise<void> {
 		return new Promise<void>((resolve) =>
