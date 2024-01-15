@@ -18,6 +18,8 @@ export { delay } from './functions/delay';
 export { filterUsername } from './functions/filterUsername';
 export { makeUnawaitable } from './functions/makeUnawaitable';
 export { omit } from './functions/omit';
+export { once } from './functions/once';
+export { onceAsync } from './functions/onceAsync';
 export { pick } from './functions/pick';
 export { protect } from './functions/protect';
 export { readRecord } from './functions/readRecord';
