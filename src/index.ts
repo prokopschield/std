@@ -17,6 +17,7 @@ export { defineGlobal } from './functions/defineGlobal';
 export { defineGlobalProperty } from './functions/defineGlobalProperty';
 export { delay } from './functions/delay';
 export { filterUsername } from './functions/filterUsername';
+export { identity } from './functions/identity';
 export { makeUnawaitable } from './functions/makeUnawaitable';
 export { omit } from './functions/omit';
 export { once } from './functions/once';
