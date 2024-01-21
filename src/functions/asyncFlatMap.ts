@@ -1,6 +1,21 @@
 export type PromiseArray<T> =
+	| Array<T>
+	| Array<Promise<T>>
+	| Promise<Array<T>>
+	| Promise<Array<Promise<T>>>
 	| Array<T | Promise<T>>
 	| Promise<Array<T | Promise<T>>>;
+
+export type AwaitedArrayMember<T> = Awaited<T[keyof T & number]>;
+
+export type AsyncMemberNP<T> = T extends
+	| Array<infer _T>
+	| Array<Promise<infer _T>>
+	| Array<infer _T | Promise<infer _T>>
+	? AwaitedArrayMember<T>
+	: T;
+
+export type AsyncMember<T> = AsyncMemberNP<Awaited<T>>;
 
 export type Transform<A, B> = (_a: A) => B | Promise<B> | PromiseArray<B>;
 
@@ -56,7 +71,7 @@ if (!Object.prototype.hasOwnProperty.call(Array.prototype, 'asyncFlatMap')) {
 			this: PromiseArray<A>,
 			transform: Transform<A, B>
 		) {
-			return asyncFlatMap(this, transform);
+			return asyncFlatMap<A, B>(this, transform);
 		},
 	});
 }
@@ -69,7 +84,7 @@ if (!Object.prototype.hasOwnProperty.call(Promise.prototype, 'asyncFlatMap')) {
 			this: PromiseArray<A>,
 			transform: Transform<A, B>
 		) {
-			return asyncFlatMap(this, transform);
+			return asyncFlatMap<A, B>(this, transform);
 		},
 	});
 }
@@ -77,12 +92,12 @@ if (!Object.prototype.hasOwnProperty.call(Promise.prototype, 'asyncFlatMap')) {
 declare global {
 	interface Array<T> {
 		asyncFlatMap<R>(
-			_transform: Transform<T[keyof T & number], R>
-		): Promise<R[]>;
+			_transform: Transform<T[keyof T & number], AsyncMember<R>>
+		): Promise<Array<AsyncMember<R>>>;
 	}
 	interface Promise<T> {
 		asyncFlatMap<R>(
-			_transform: Transform<T[keyof T & number], R>
-		): Promise<R[]>;
+			_transform: Transform<T[keyof T & number], AsyncMember<R>>
+		): Promise<Array<AsyncMember<R>>>;
 	}
 }
