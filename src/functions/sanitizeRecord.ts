@@ -8,7 +8,7 @@
 export function sanitizeRecord(
 	record: Record<string, any>,
 	replacementCharacter = '-',
-	filter_regexp = /[^a-z]+/g,
+	filter_regexp = /[^a-z]+/g
 ): Record<string, string> {
 	const out: Record<string, string> = {};
 

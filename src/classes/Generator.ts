@@ -40,8 +40,7 @@ export class PsGenerator<type> implements Generator<type, type, type> {
 	static *join<type>(
 		comparing_fn: (left: type, right: type) => number | boolean,
 		...generators: Array<
-			| PsGenerator<type>
-			| Generator<type, type | undefined, type | undefined>
+			PsGenerator<type> | Generator<type, type | undefined, type | undefined>
 		>
 	): Generator<type, undefined, type | undefined> {
 		let [first, second, third, ...rest] = generators;

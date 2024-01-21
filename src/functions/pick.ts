@@ -5,7 +5,7 @@
  */
 export function pick<T extends Record<keyof any, any>, K extends keyof T>(
 	object: T,
-	keys: K[]
+	keys: K[],
 ): { [P in K]: T[P] } {
 	const returnValue: Pick<T, K> = {} as any;
 
