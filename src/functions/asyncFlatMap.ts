@@ -88,16 +88,3 @@ if (!Object.prototype.hasOwnProperty.call(Promise.prototype, 'asyncFlatMap')) {
 		},
 	});
 }
-
-declare global {
-	interface Array<T> {
-		asyncFlatMap<R>(
-			_transform: Transform<T[keyof T & number], AsyncMember<R>>
-		): Promise<Array<AsyncMember<R>>>;
-	}
-	interface Promise<T> {
-		asyncFlatMap<R>(
-			_transform: Transform<T[keyof T & number], AsyncMember<R>>
-		): Promise<Array<AsyncMember<R>>>;
-	}
-}
