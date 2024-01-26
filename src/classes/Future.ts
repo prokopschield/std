@@ -1,7 +1,7 @@
 import asyncFlatMap, {
 	Transform,
 	AsyncMemberNP,
-} from "../functions/asyncFlatMap";
+} from '../functions/asyncFlatMap';
 
 export class Future<T> implements Promise<T> {
 	value: T | Future<T> = this;
@@ -20,7 +20,7 @@ export class Future<T> implements Promise<T> {
 		onrejected?:
 			| ((reason: any) => TResult2 | PromiseLike<TResult2>)
 			| null
-			| undefined,
+			| undefined
 	): Promise<TResult1 | TResult2> {
 		if (onfulfilled && this.value !== this) {
 			return onfulfilled(await this.value);
@@ -31,7 +31,7 @@ export class Future<T> implements Promise<T> {
 		}
 
 		const promise_then =
-			typeof onfulfilled === "function"
+			typeof onfulfilled === 'function'
 				? new Promise<TResult1>((resolve, reject) => {
 						const cleanup = () => {
 							this.callbacks_then.delete(happy);
@@ -46,18 +46,18 @@ export class Future<T> implements Promise<T> {
 						const sad = (reason: any) => {
 							cleanup();
 
-							if (typeof onrejected !== "function") {
+							if (typeof onrejected !== 'function') {
 								reject(reason);
 							}
 						};
 
 						this.callbacks_then.add(happy);
 						this.callbacks_catch.add(sad);
-					})
+				  })
 				: onfulfilled;
 
 		const promise_catch =
-			typeof onrejected === "function"
+			typeof onrejected === 'function'
 				? new Promise<T | TResult2>((resolve) => {
 						const cleanup = () => {
 							this.callbacks_then.delete(happy);
@@ -67,7 +67,7 @@ export class Future<T> implements Promise<T> {
 						const happy = (_arg: T) => {
 							cleanup();
 
-							if (typeof onfulfilled !== "function") {
+							if (typeof onfulfilled !== 'function') {
 								resolve(this);
 							}
 						};
@@ -79,7 +79,7 @@ export class Future<T> implements Promise<T> {
 
 						this.callbacks_then.add(happy);
 						this.callbacks_catch.add(sad);
-					})
+				  })
 				: onrejected;
 
 		const promises: Array<typeof promise_then | typeof promise_catch> = [];
@@ -96,7 +96,7 @@ export class Future<T> implements Promise<T> {
 		onrejected?:
 			| ((reason: any) => TResult | PromiseLike<TResult>)
 			| null
-			| undefined,
+			| undefined
 	): Promise<T | TResult> {
 		if (this.resolved) {
 			return this.value;
@@ -132,7 +132,7 @@ export class Future<T> implements Promise<T> {
 	}
 
 	async finally(
-		onfinally?: ((value?: T) => void | Promise<void | T>) | null | undefined,
+		onfinally?: ((value?: T) => void | Promise<void | T>) | null | undefined
 	): Promise<T> {
 		return this.then(
 			async (value) => {
@@ -144,12 +144,12 @@ export class Future<T> implements Promise<T> {
 				onfinally?.();
 
 				return this;
-			},
+			}
 		);
 	}
 
 	async asyncFlatMap<R>(
-		transform: Transform<T[keyof T & number], AsyncMemberNP<Awaited<R>>>,
+		transform: Transform<T[keyof T & number], AsyncMemberNP<Awaited<R>>>
 	): Promise<AsyncMemberNP<Awaited<R>>[]> {
 		const value = await this;
 
@@ -157,19 +157,19 @@ export class Future<T> implements Promise<T> {
 			Symbol.iterator in value
 				? (value as unknown as T[keyof T & number][])
 				: [value as unknown as T[keyof T & number]],
-			transform,
+			transform
 		);
 	}
 
-	[Symbol.toStringTag] = "Future";
+	[Symbol.toStringTag] = 'Future';
 
 	constructor(
 		executor_or_promise: (
 			resolve: (value: T | PromiseLike<T>) => void,
-			reject: (reason?: any) => void,
-		) => any | Future<T> | Promise<T>,
+			reject: (reason?: any) => void
+		) => any | Future<T> | Promise<T>
 	) {
-		if (typeof executor_or_promise === "function") {
+		if (typeof executor_or_promise === 'function') {
 			this.init_with_executor(executor_or_promise);
 		} else {
 			this.init_with_promise(executor_or_promise);
@@ -179,12 +179,12 @@ export class Future<T> implements Promise<T> {
 	protected async init_with_executor(
 		executor: (
 			resolve: (value: T | PromiseLike<T>) => void,
-			reject: (reason?: any) => void,
-		) => any,
+			reject: (reason?: any) => void
+		) => any
 	) {
 		executor(
 			(value) => this.resolve(value),
-			(reason) => this.reject(reason),
+			(reason) => this.reject(reason)
 		);
 	}
 
@@ -209,7 +209,7 @@ export class Future<T> implements Promise<T> {
 				[...this.callbacks_then].map(async (callback) => {
 					this.callbacks_then.delete(callback);
 					await callback(final);
-				}),
+				})
 			);
 		} catch (reason) {
 			this.reject(reason);
@@ -229,7 +229,7 @@ export class Future<T> implements Promise<T> {
 				[...this.callbacks_catch].map(async (callback) => {
 					this.callbacks_catch.delete(callback);
 					await callback(reason);
-				}),
+				})
 			);
 		} catch (error) {
 			this.reject(error);
