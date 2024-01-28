@@ -34,7 +34,7 @@ export class Future<T> implements Promise<T> {
 
 		const promise_then =
 			typeof onfulfilled === 'function'
-				? new Promise<TResult1>((resolve, reject) => {
+				? new Future<TResult1>((resolve, reject) => {
 						const cleanup = () => {
 							this.callbacks_then.delete(happy);
 							this.callbacks_catch.delete(sad);
@@ -60,7 +60,7 @@ export class Future<T> implements Promise<T> {
 
 		const promise_catch =
 			typeof onrejected === 'function'
-				? new Promise<T | TResult2>((resolve) => {
+				? new Future<T | TResult2>((resolve) => {
 						const cleanup = () => {
 							this.callbacks_then.delete(happy);
 							this.callbacks_catch.delete(sad);
