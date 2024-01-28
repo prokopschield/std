@@ -66,11 +66,11 @@ export class Future<T> implements Promise<T> {
 							this.callbacks_catch.delete(sad);
 						};
 
-						const happy = (_arg: T) => {
+						const happy = (value: T) => {
 							cleanup();
 
 							if (typeof onfulfilled !== 'function') {
-								resolve(this);
+								resolve(value);
 							}
 						};
 
