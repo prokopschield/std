@@ -235,6 +235,14 @@ export class Future<T> implements Promise<T> {
 			this.reject(error);
 		}
 	}
+
+	static resolve<T>(value: T) {
+		return new Future<T>((resolve) => resolve(value));
+	}
+
+	static reject<T>(reason: any) {
+		return new Future<T>((_, reject) => reject(reason));
+	}
 }
 
 export default Future;
