@@ -236,7 +236,7 @@ export class Future<T> implements Promise<T> {
 		}
 	}
 
-	static resolve<T>(value: T) {
+	static resolve<T>(value: T | PromiseLike<T>) {
 		return new Future<T>((resolve) => resolve(value));
 	}
 
