@@ -1,7 +1,9 @@
 import asyncFlatMap, {
 	Transform,
 	AsyncMemberNP,
+	PromiseArray,
 } from '../functions/asyncFlatMap';
+import identity from '../functions/identity';
 
 export class Future<T> implements Promise<T> {
 	value: T | Future<T> = this;
@@ -242,6 +244,12 @@ export class Future<T> implements Promise<T> {
 
 	static reject<T>(reason: any) {
 		return new Future<T>((_, reject) => reject(reason));
+	}
+
+	static all<T>(...items: Array<PromiseArray<T>>): Future<T[]> {
+		return Future.resolve<T[]>(
+			asyncFlatMap(items, (items) => asyncFlatMap(items, identity))
+		);
 	}
 }
 
