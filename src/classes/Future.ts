@@ -11,12 +11,12 @@ export class Future<T> implements Promise<T> {
 	resolved = false;
 	rejected = false;
 
-	callbacks_then: Set<(arg: T) => any> = new Set();
+	callbacks_then: Set<(arg: Awaited<T>) => any> = new Set();
 	callbacks_catch: Set<(reason: any) => any> = new Set();
 
 	async then<TResult1 = T, TResult2 = never>(
 		onfulfilled?:
-			| ((value: T) => TResult1 | PromiseLike<TResult1>)
+			| ((value: Awaited<T>) => TResult1 | PromiseLike<TResult1>)
 			| null
 			| undefined,
 		onrejected?:
@@ -40,7 +40,7 @@ export class Future<T> implements Promise<T> {
 							this.callbacks_catch.delete(sad);
 						};
 
-						const happy = (arg: T) => {
+						const happy = (arg: Awaited<T>) => {
 							cleanup();
 							resolve(onfulfilled(arg));
 						};
