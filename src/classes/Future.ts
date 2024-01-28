@@ -261,6 +261,22 @@ export class Future<T> implements Promise<T> {
 			asyncFlatMap(items, (items) => asyncFlatMap(items, identity))
 		);
 	}
+
+	static race<T>(items: Array<T | PromiseLike<T>>): Future<T> {
+		return new Future<T>((resolve) => {
+			const futures = items.map((item) => Future.resolve(item));
+
+			const resolver = (item: T) => {
+				for (const future of futures) {
+					future.callbacks_then.delete(resolver);
+				}
+
+				resolve(item);
+			};
+
+			futures.map((item) => item.then(resolver));
+		});
+	}
 }
 
 export default Future;
