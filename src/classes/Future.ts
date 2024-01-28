@@ -218,6 +218,12 @@ export class Future<T> implements Promise<T> {
 		}
 	}
 
+	protected resolve_once(value: T | PromiseLike<T>) {
+		if (this.value === this) {
+			this.resolve((this.value = Future.resolve(value)));
+		}
+	}
+
 	protected async reject(reason: any) {
 		if (!this.rejected) {
 			this.reason = reason;
