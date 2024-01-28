@@ -184,10 +184,14 @@ export class Future<T> implements Promise<T> {
 			reject: (reason?: any) => void
 		) => any
 	) {
-		executor(
-			(value) => this.resolve(value),
-			(reason) => this.reject(reason)
-		);
+		try {
+			await executor(
+				(value) => this.resolve(value),
+				(reason) => this.reject(reason)
+			);
+		} catch (error) {
+			this.reject(error);
+		}
 	}
 
 	protected async init_with_promise(promise: Future<T> | Promise<T>) {
