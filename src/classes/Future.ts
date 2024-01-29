@@ -5,6 +5,12 @@ import asyncFlatMap, {
 } from '../functions/asyncFlatMap';
 import identity from '../functions/identity';
 
+export interface FutureOptions {
+	timeout?: number;
+}
+
+export const TIMEOUT = Symbol('FUTURE_TIMEOUT');
+
 export class Future<T> implements Promise<T> {
 	value: T | Future<T> = this;
 	reason: any = undefined;
@@ -169,12 +175,24 @@ export class Future<T> implements Promise<T> {
 		executor_or_promise: (
 			resolve: (value: T | PromiseLike<T>) => void,
 			reject: (reason?: any) => void
-		) => any | Future<T> | Promise<T>
+		) => any | Future<T> | Promise<T>,
+		options: FutureOptions = {}
 	) {
 		if (typeof executor_or_promise === 'function') {
 			this.init_with_executor(executor_or_promise);
 		} else {
 			this.init_with_promise(executor_or_promise);
+		}
+
+		if (options.timeout) {
+			const timeout = setTimeout(
+				() => this.reject(TIMEOUT),
+				options.timeout
+			);
+
+			this.finally(() => {
+				clearTimeout(timeout);
+			});
 		}
 	}
 
