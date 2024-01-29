@@ -12,15 +12,14 @@ export interface FutureOptions {
 export const TIMEOUT = Symbol('FUTURE_TIMEOUT');
 
 export class Future<T> implements Promise<T> {
-	value: T | Future<T> = this;
-	reason: any = undefined;
+	value: Awaited<T> | undefined;
+	reason: any;
 	resolved = false;
 	rejected = false;
 
-	callbacks_then: Set<(arg: Awaited<T>) => any> = new Set();
-	callbacks_catch: Set<(reason: any) => any> = new Set();
+	callbacks = new Set<(self: this) => any>();
 
-	async then<TResult1 = T, TResult2 = never>(
+	then<TResult1 = T, TResult2 = never>(
 		onfulfilled?:
 			| ((value: Awaited<T>) => TResult1 | PromiseLike<TResult1>)
 			| null
@@ -29,131 +28,45 @@ export class Future<T> implements Promise<T> {
 			| ((reason: any) => TResult2 | PromiseLike<TResult2>)
 			| null
 			| undefined
-	): Promise<TResult1 | TResult2> {
-		if (onfulfilled && this.value !== this) {
-			return onfulfilled(await this.value);
+	): Future<TResult1 | TResult2> {
+		if (this.resolved || this.rejected) {
+			setTimeout(() => this.flush());
 		}
 
-		if (onrejected && this.rejected) {
-			return onrejected(this.reason);
-		}
-
-		const promise_then =
-			typeof onfulfilled === 'function'
-				? new Future<TResult1>((resolve, reject) => {
-						const cleanup = () => {
-							this.callbacks_then.delete(happy);
-							this.callbacks_catch.delete(sad);
-						};
-
-						const happy = (arg: Awaited<T>) => {
-							cleanup();
-							resolve(onfulfilled(arg));
-						};
-
-						const sad = (reason: any) => {
-							cleanup();
-
-							if (typeof onrejected !== 'function') {
-								reject(reason);
-							}
-						};
-
-						this.callbacks_then.add(happy);
-						this.callbacks_catch.add(sad);
-				  })
-				: onfulfilled;
-
-		const promise_catch =
-			typeof onrejected === 'function'
-				? new Future<T | TResult2>((resolve) => {
-						const cleanup = () => {
-							this.callbacks_then.delete(happy);
-							this.callbacks_catch.delete(sad);
-						};
-
-						const happy = (value: T) => {
-							cleanup();
-
-							if (typeof onfulfilled !== 'function') {
-								resolve(value);
-							}
-						};
-
-						const sad = (reason: any) => {
-							cleanup();
-							resolve(reason);
-						};
-
-						this.callbacks_then.add(happy);
-						this.callbacks_catch.add(sad);
-				  })
-				: onrejected;
-
-		const promises: Array<typeof promise_then | typeof promise_catch> = [];
-
-		promise_then && promises.push(promise_then);
-		promise_catch && promises.push(promise_catch);
-
-		const raced = await Promise.race(promises);
-
-		return raced || promise_then || promise_catch || (this as any);
+		return new Future<TResult1 | TResult2>((resolve, reject) => {
+			this.callbacks.add((self) => {
+				try {
+					if (self.rejected) {
+						if (onrejected) {
+							resolve(onrejected(self.reason));
+						} else {
+							reject(self.reason);
+						}
+					} else if (onfulfilled) {
+						resolve(onfulfilled(self.value!));
+					} else {
+						resolve(self.value as any);
+					}
+				} catch (error) {
+					reject(error);
+				}
+			});
+		});
 	}
 
-	async catch<TResult = never>(
+	catch<TResult = never>(
 		onrejected?:
 			| ((reason: any) => TResult | PromiseLike<TResult>)
 			| null
 			| undefined
-	): Promise<T | TResult> {
-		if (this.resolved) {
-			return this.value;
-		}
-
-		if (onrejected && this.rejected) {
-			return onrejected(this.reason);
-		}
-
-		return new Promise<T | TResult>((resolve) => {
-			if (onrejected) {
-				const cleanup = () => {
-					this.callbacks_then.delete(happy);
-					this.callbacks_catch.delete(sad);
-				};
-
-				const happy = (value: T) => {
-					cleanup();
-					resolve(value);
-				};
-
-				const sad = (reason: any) => {
-					cleanup();
-					resolve(onrejected(reason));
-				};
-
-				this.callbacks_then.add(happy);
-				this.callbacks_catch.add(sad);
-			} else {
-				return this;
-			}
-		});
+	): Future<Awaited<T> | TResult> {
+		return this.then(identity, onrejected);
 	}
 
-	async finally(
+	finally(
 		onfinally?: ((value?: T) => void | Promise<void | T>) | null | undefined
-	): Promise<T> {
-		return this.then(
-			async (value) => {
-				await onfinally?.(value);
-
-				return value;
-			},
-			() => {
-				onfinally?.();
-
-				return this;
-			}
-		);
+	): Future<T> {
+		return this.then(onfinally, onfinally).then(() => this);
 	}
 
 	async asyncFlatMap<R>(
@@ -220,6 +133,13 @@ export class Future<T> implements Promise<T> {
 		}
 	}
 
+	flush() {
+		for (const callback of this.callbacks) {
+			this.callbacks.delete(callback);
+			callback(this);
+		}
+	}
+
 	protected async resolve(value: T | PromiseLike<T>) {
 		try {
 			const final = await value;
@@ -227,22 +147,9 @@ export class Future<T> implements Promise<T> {
 			this.value = final;
 			this.resolved = true;
 
-			this.callbacks_catch.clear();
-
-			await Promise.all(
-				[...this.callbacks_then].map(async (callback) => {
-					this.callbacks_then.delete(callback);
-					await callback(final);
-				})
-			);
+			this.flush();
 		} catch (reason) {
 			this.reject(reason);
-		}
-	}
-
-	protected resolve_once(value: T | PromiseLike<T>) {
-		if (this.value === this) {
-			this.resolve((this.value = Future.resolve(value)));
 		}
 	}
 
@@ -252,18 +159,7 @@ export class Future<T> implements Promise<T> {
 			this.rejected = true;
 		}
 
-		this.callbacks_then.clear();
-
-		try {
-			await Promise.all(
-				[...this.callbacks_catch].map(async (callback) => {
-					this.callbacks_catch.delete(callback);
-					await callback(reason);
-				})
-			);
-		} catch (error) {
-			this.reject(error);
-		}
+		this.flush();
 	}
 
 	static resolve<T>(value: T | PromiseLike<T>) {
@@ -286,7 +182,7 @@ export class Future<T> implements Promise<T> {
 
 			const resolver = (item: T) => {
 				for (const future of futures) {
-					future.callbacks_then.delete(resolver);
+					future.callbacks.clear();
 				}
 
 				resolve(item);
