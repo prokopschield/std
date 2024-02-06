@@ -210,7 +210,7 @@ export class Future<T> implements Promise<T> {
 
 	_interval?: number;
 	_poll?: FutureOptions<T>['poll'];
-	_poll_timeout?: number;
+	_poll_timeout?: ReturnType<typeof setTimeout>;
 
 	/**
 	 * calls this Future's poll callback
