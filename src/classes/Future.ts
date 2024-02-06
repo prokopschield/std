@@ -5,7 +5,11 @@ import asyncFlatMap, {
 } from '../functions/asyncFlatMap';
 import identity from '../functions/identity';
 
-export interface FutureOptions {
+export interface FutureOptions<T> {
+	/** how often .poll() is called */
+	interval?: number;
+	/** @returns a value which resolves this Future, or undefined */
+	poll?: () => undefined | PromiseLike<T | undefined>;
 	timeout?: number;
 }
 
@@ -89,7 +93,7 @@ export class Future<T> implements Promise<T> {
 			resolve: (value: T | PromiseLike<T>) => void,
 			reject: (reason?: any) => void
 		) => any | Future<T> | Promise<T>,
-		options: FutureOptions = {}
+		options: FutureOptions<T> = {}
 	) {
 		if (typeof executor_or_promise === 'function') {
 			this.init_with_executor(executor_or_promise);
@@ -106,6 +110,18 @@ export class Future<T> implements Promise<T> {
 			this.finally(() => {
 				clearTimeout(timeout);
 			});
+		}
+
+		if (options.poll) {
+			this._poll = options.poll;
+		}
+
+		if (options.interval) {
+			this._interval = options.interval;
+		}
+
+		if (options.poll && options.interval) {
+			this.schedule_poll();
 		}
 	}
 
@@ -190,6 +206,44 @@ export class Future<T> implements Promise<T> {
 
 			futures.map((item) => item.then(resolver));
 		});
+	}
+
+	_interval?: number;
+	_poll?: FutureOptions<T>['poll'];
+	_poll_timeout?: number;
+
+	/**
+	 * calls this Future's poll callback
+	 * @returns a Future that resolves to this Future, or undefined
+	 */
+	poll(): Future<T | undefined> {
+		return new Future(async (resolve) => {
+			try {
+				clearTimeout(this._poll_timeout);
+
+				if (this.resolved || this.rejected) {
+					resolve(this);
+				}
+
+				const value = await this._poll?.();
+
+				if (value === undefined) {
+					this.schedule_poll();
+
+					return resolve(undefined);
+				}
+
+				this.resolve(value);
+			} catch (reason) {
+				this.reject(reason);
+			} finally {
+				resolve(this);
+			}
+		});
+	}
+
+	schedule_poll() {
+		this._poll_timeout = setTimeout(() => this.poll(), this._interval);
 	}
 }
 

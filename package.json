@@ -1,7 +1,7 @@
 {
 	"name": "ps-std",
 	"description": "Standard library.",
-	"version": "0.1.41-4",
+	"version": "0.1.41-5",
 	"main": "lib/index.js",
 	"author": "Prokop Schield",
 	"license": "GPL-3.0-or-later",
