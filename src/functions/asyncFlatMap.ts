@@ -1,23 +1,23 @@
 export type PromiseArray<T> =
 	| Array<T>
-	| Array<Promise<T>>
-	| Promise<Array<T>>
-	| Promise<Array<Promise<T>>>
-	| Array<T | Promise<T>>
-	| Promise<Array<T | Promise<T>>>;
+	| Array<PromiseLike<T>>
+	| PromiseLike<Array<T>>
+	| PromiseLike<Array<PromiseLike<T>>>
+	| Array<T | PromiseLike<T>>
+	| PromiseLike<Array<T | PromiseLike<T>>>;
 
 export type AwaitedArrayMember<T> = Awaited<T[keyof T & number]>;
 
 export type AsyncMemberNP<T> = T extends
 	| Array<infer _T>
-	| Array<Promise<infer _T>>
-	| Array<infer _T | Promise<infer _T>>
+	| Array<PromiseLike<infer _T>>
+	| Array<infer _T | PromiseLike<infer _T>>
 	? AwaitedArrayMember<T>
 	: T;
 
 export type AsyncMember<T> = AsyncMemberNP<Awaited<T>>;
 
-export type Transform<A, B> = (_a: A) => B | Promise<B> | PromiseArray<B>;
+export type Transform<A, B> = (_a: A) => B | PromiseLike<B> | PromiseArray<B>;
 
 export async function asyncFlatMap<A, B>(
 	self: PromiseArray<A>,
