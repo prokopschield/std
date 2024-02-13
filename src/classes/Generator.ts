@@ -2,14 +2,28 @@ export class PsGenerator<type> implements Generator<type, type, type> {
 	generator: Generator<type, type, type>;
 	queue = new Array<type>();
 	constructor(fn: () => type) {
+		const queue = this.queue;
+
+		const give = (item?: type) => {
+			if (item !== undefined) {
+				queue.push(item);
+			}
+		};
+
+		const take = () => {
+			const queued = queue.shift();
+
+			return queued === undefined ? fn() : queued;
+		};
+
 		this.generator = (function* (): Generator<type, type, type> {
-			let value: type = fn();
 			while (true) {
-				let nv = yield value;
-				if (nv) {
-					value = nv;
-				} else if ((value = fn()) === undefined) {
-					return fn();
+				const value = take();
+
+				if (value !== undefined) {
+					give(yield value);
+				} else if (!queue.length) {
+					return take();
 				}
 			}
 		})();
