@@ -1,5 +1,6 @@
 export class PsGenerator<type> implements Generator<type, type, type> {
 	generator: Generator<type, type, type>;
+	queue = new Array<type>();
 	constructor(fn: () => type) {
 		this.generator = (function* (): Generator<type, type, type> {
 			let value: type = fn();
@@ -13,8 +14,20 @@ export class PsGenerator<type> implements Generator<type, type, type> {
 			}
 		})();
 	}
-	next(val?: type | undefined) {
-		return val ? this.generator.next(val) : this.generator.next();
+	next(...items: type[]): IteratorResult<type> {
+		const queued = this.queue.shift();
+
+		for (const item of items) {
+			if (item !== undefined) {
+				this.queue.push(item);
+			}
+		}
+
+		if (queued !== undefined) {
+			return { done: false, value: queued };
+		}
+
+		return this.generator.next();
 	}
 	return(val: type) {
 		return this.generator.return(val);
