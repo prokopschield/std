@@ -188,9 +188,7 @@ export class Future<T> implements Promise<T> {
 
 	static all<T>(...items: Array<PromiseArray<T>>): Future<T[]> {
 		return Future.resolve<T[]>(
-			asyncFlatMap<PromiseArray<T>, T>(items, (items) =>
-				asyncFlatMap<T, T>(items, identity)
-			)
+			asyncFlatMap<PromiseArray<T>, T>(items, identity)
 		);
 	}
 
