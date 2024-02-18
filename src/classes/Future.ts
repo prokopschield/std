@@ -15,6 +15,11 @@ export interface FutureOptions<T> {
 
 export const TIMEOUT = Symbol('FUTURE_TIMEOUT');
 
+export type Executor<T> = (
+	resolve: (value: T | PromiseLike<T>) => void,
+	reject: (reason?: any) => void
+) => any;
+
 export class Future<T> implements Promise<T> {
 	value: Awaited<T> | undefined;
 	reason: any;
@@ -89,10 +94,7 @@ export class Future<T> implements Promise<T> {
 	[Symbol.toStringTag] = 'Future';
 
 	constructor(
-		executor_or_promise: (
-			resolve: (value: T | PromiseLike<T>) => void,
-			reject: (reason?: any) => void
-		) => any | Future<T> | Promise<T>,
+		executor_or_promise: Executor<T> | PromiseLike<T>,
 		options: FutureOptions<T> = {}
 	) {
 		if (typeof executor_or_promise === 'function') {
@@ -125,12 +127,7 @@ export class Future<T> implements Promise<T> {
 		}
 	}
 
-	protected async init_with_executor(
-		executor: (
-			resolve: (value: T | PromiseLike<T>) => void,
-			reject: (reason?: any) => void
-		) => any
-	) {
+	protected async init_with_executor(executor: Executor<T>) {
 		try {
 			await executor(
 				(value) => this.resolve(value),
@@ -141,7 +138,7 @@ export class Future<T> implements Promise<T> {
 		}
 	}
 
-	protected async init_with_promise(promise: Future<T> | Promise<T>) {
+	protected async init_with_promise(promise: PromiseLike<T>) {
 		try {
 			this.resolve(await promise);
 		} catch (reason) {
