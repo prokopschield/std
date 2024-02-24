@@ -6,6 +6,15 @@ export type PromiseArray<T> =
 	| Array<T | PromiseLike<T>>
 	| PromiseLike<Array<T | PromiseLike<T>>>;
 
+export type AsyncFlatIterable<T> = IterableIterator<
+	Awaited<PromiseArray<T>>[number]
+>;
+
+export type AsyncFlatMappable<T> =
+	| AsyncFlatIterable<T>
+	| PromiseLike<AsyncFlatIterable<T>>
+	| PromiseArray<T>;
+
 export type AwaitedArrayMember<T> = Awaited<T[keyof T & number]>;
 
 export type AsyncMemberNP<T> = T extends
@@ -20,7 +29,7 @@ export type AsyncMember<T> = AsyncMemberNP<Awaited<T>>;
 export type Transform<A, B> = (_a: A) => B | PromiseLike<B> | PromiseArray<B>;
 
 export async function asyncFlatMap<A, B>(
-	self: PromiseArray<A>,
+	self: AsyncFlatMappable<A>,
 	transform: Transform<A, B>
 ): Promise<B[]> {
 	const items = await Promise.all(await self);
