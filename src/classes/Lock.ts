@@ -11,6 +11,11 @@ export class Lock {
 		this._counter = Number(locked) || 0;
 	}
 
+	/** the number of times this Lock is currently locked */
+	get count() {
+		return this._counter;
+	}
+
 	/**
 	 * Locks this lock, unlock the returned lock once you're done with this resource.
 	 * @returns a new lock
