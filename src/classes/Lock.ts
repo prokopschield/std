@@ -18,8 +18,8 @@ export class Lock {
 
 	/** the number of callbacks waiting for this Lock */
 	get waiting() {
-		return this._callbacks.length
-	} 
+		return this._callbacks.length;
+	}
 
 	/**
 	 * Locks this lock, unlock the returned lock once you're done with this resource.
