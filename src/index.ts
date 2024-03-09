@@ -2,6 +2,7 @@ export { CounterMap } from './classes/CounterMap';
 export { Future } from './classes/Future';
 export { Generator } from './classes/Generator';
 export { Lock } from './classes/Lock';
+export { Pipeline } from './classes/Pipeline';
 export { ProceduralQueue } from './classes/ProceduralQueue';
 export { Queue } from './classes/Queue';
 export { Semaphore } from './classes/Semaphore';
