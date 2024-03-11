@@ -15,9 +15,9 @@ export interface Pipeline<I, O> extends PipelineFn<I, O> {
 
 export function pipe<A, B, C>(
 	this: PipelineFn<A, B>,
-	transform: Transform<B, C>
+	transform: Transform<B, C>,
+	lock = new Lock()
 ): Pipeline<A, C> {
-	const lock = new Lock();
 	const previous = this;
 
 	const pipeline: Pipeline<A, C> = Object.assign(
@@ -42,9 +42,12 @@ export function pipe<A, B, C>(
 	return pipeline;
 }
 
-export function Pipeline<I, O>(transform: Transform<I, O>): Pipeline<I, O> {
+export function Pipeline<I, O>(
+	transform: Transform<I, O>,
+	lock = new Lock()
+): Pipeline<I, O> {
 	// @ts-ignore
-	return pipe(transform);
+	return pipe(transform, lock);
 }
 
 export default Pipeline;
