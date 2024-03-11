@@ -25,14 +25,13 @@ export function pipe<A, B, C>(
 			const guard_promise = lock.wait_and_lock();
 
 			const future = new Future<C>((resolve, reject) => {
-				guard_promise.then((guard) => {
-					future.finally(() => guard.release_async());
-
-					Future.resolve<A>(input)
-						.then(previous)
-						.then(transform)
-						.then(resolve, reject);
-				});
+				Future.resolve<A>(input)
+					.then(previous)
+					.await(guard_promise)
+					.then(transform)
+					.then(resolve, reject)
+					.then(() => guard_promise)
+					.then((guard) => guard.release_async());
 			});
 
 			return future;
