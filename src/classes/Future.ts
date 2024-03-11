@@ -78,6 +78,12 @@ export class Future<T> implements Promise<T> {
 		return this.then(onfinally, onfinally).then(() => this);
 	}
 
+	await<X>(
+		executor_or_promise: Executor<X> | PromiseLike<X> | null | undefined
+	): Future<T> {
+		return new Future(executor_or_promise || (() => {})).then(() => this);
+	}
+
 	async asyncFlatMap<R>(
 		transform: Transform<T[keyof T & number], AsyncMemberNP<Awaited<R>>>
 	): Promise<AsyncMemberNP<Awaited<R>>[]> {
