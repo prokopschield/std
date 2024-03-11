@@ -10,7 +10,7 @@ export interface PipelineFn<I, O> extends Transform<I, O> {
 }
 
 export interface Pipeline<I, O> extends PipelineFn<I, O> {
-	pipe<T>(transform: Transform<O, T>): Pipeline<I, T>;
+	pipe<T>(transform: Transform<O, T>, lock?: Lock): Pipeline<I, T>;
 }
 
 export function pipe<A, B, C>(
