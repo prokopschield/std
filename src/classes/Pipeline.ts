@@ -6,7 +6,7 @@ export interface Transform<I, O> {
 }
 
 export interface PipelineFn<I, O> extends Transform<I, O> {
-	(input: I): Future<O>;
+	(input: I | PromiseLike<I>): Future<O>;
 }
 
 export interface Pipeline<I, O> extends PipelineFn<I, O> {
