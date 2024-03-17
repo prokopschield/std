@@ -14,7 +14,7 @@ export interface Pipeline<I, O> extends PipelineFn<I, O> {
 }
 
 export function pipe<A, B, C>(
-	this: PipelineFn<A, B>,
+	this: Transform<A, B>,
 	transform: Transform<B, C>,
 	lock = new Lock()
 ): Pipeline<A, C> {
