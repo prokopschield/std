@@ -20,6 +20,8 @@ export type Executor<T> = (
 	reject: (reason?: any) => void
 ) => any;
 
+export const VoidExecutor: Executor<void> = (resolve) => resolve();
+
 export class Future<T> implements Promise<T> {
 	value: Awaited<T> | undefined;
 	reason: any;
@@ -81,7 +83,11 @@ export class Future<T> implements Promise<T> {
 	await<X>(
 		executor_or_promise: Executor<X> | PromiseLike<X> | null | undefined
 	): Future<T> {
-		return new Future(executor_or_promise || (() => {})).then(() => this);
+		const awaiter = new Future<X | void>(
+			executor_or_promise || VoidExecutor
+		);
+
+		return awaiter.then(() => this);
 	}
 
 	async asyncFlatMap<R>(
