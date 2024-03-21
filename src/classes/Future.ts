@@ -245,9 +245,9 @@ export class Future<T> implements Promise<T> {
 				this.resolve(value);
 			} catch (reason) {
 				this.reject(reason);
-			} finally {
-				resolve(this);
 			}
+
+			return resolve(this);
 		});
 	}
 
