@@ -240,9 +240,9 @@ export class Future<T> implements Promise<T> {
 					this.schedule_poll();
 
 					return resolve(undefined);
+				} else {
+					return this.resolve(value);
 				}
-
-				this.resolve(value);
 			} catch (reason) {
 				this.reject(reason);
 			}
