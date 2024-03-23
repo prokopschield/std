@@ -231,7 +231,7 @@ export class Future<T> implements Promise<T> {
 				clearTimeout(this._poll_timeout);
 
 				if (this.resolved || this.rejected) {
-					resolve(this);
+					return resolve(this);
 				}
 
 				const value = await this._poll?.();
