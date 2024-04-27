@@ -8,6 +8,7 @@ export { Queue } from './classes/Queue';
 export { Semaphore } from './classes/Semaphore';
 export { SerialQueue } from './classes/SerialQueue';
 export { SetMap } from './classes/SetMap';
+export { Timer } from './classes/Timer';
 
 export { assert } from './functions/assert';
 export { asyncFlatMap } from './functions/asyncFlatMap';
@@ -21,6 +22,7 @@ export { delay } from './functions/delay';
 export { filterUsername } from './functions/filterUsername';
 export { identity } from './functions/identity';
 export { makeUnawaitable } from './functions/makeUnawaitable';
+export { noop } from './functions/noop';
 export { omit } from './functions/omit';
 export { once } from './functions/once';
 export { onceAsync } from './functions/onceAsync';
