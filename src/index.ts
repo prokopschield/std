@@ -34,3 +34,4 @@ export { sanitizeRecord } from './functions/sanitizeRecord';
 export { shellEscape } from './functions/shellEscape';
 export { timestamp } from './functions/timestamp';
 export { Unawaitable, unawaitable } from './functions/unawaitable';
+export { zip } from './functions/zip';
