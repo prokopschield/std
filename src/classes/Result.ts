@@ -11,11 +11,11 @@ export abstract class Result<T = undefined, E = unknown> {
 	abstract map_async<Ook, Oerr = E>(
 		ok: (value: T) => Ook | PromiseLike<Ook>,
 		err?: (error: E) => Oerr | PromiseLike<Oerr>
-	): Future<Result<Ook, Oerr>>;
+	): FutureResult<Ook, Oerr>;
 	abstract map_err<Oerr>(err: (error: E) => Oerr): Result<T, Oerr>;
 	abstract map_err_async<Oerr>(
 		err: (error: E) => Oerr | PromiseLike<Oerr>
-	): Future<Result<T, Oerr>>;
+	): FutureResult<T, Oerr>;
 }
 
 export class Ok<T = undefined, E = unknown> extends Result<T, E> {
@@ -44,14 +44,8 @@ export class Ok<T = undefined, E = unknown> extends Result<T, E> {
 	map_async<Ook, Oerr = E>(
 		ok: (value: T) => Ook | PromiseLike<Ook>,
 		_err?: (error: E) => Oerr | PromiseLike<Oerr>
-	): Future<Result<Ook, Oerr>> {
-		return new Future(async (resolve) => {
-			try {
-				resolve(new Ok(await ok(this._value)) as Result<Ook, Oerr>);
-			} catch (error) {
-				resolve(new Err(error as Oerr));
-			}
-		});
+	): FutureResult<Ook, Oerr> {
+		return new FutureResult(() => ok(this._value));
 	}
 
 	map_err<Oerr>(_err: (error: E) => Oerr): Ok<T, Oerr> {
@@ -60,8 +54,8 @@ export class Ok<T = undefined, E = unknown> extends Result<T, E> {
 
 	map_err_async<Oerr>(
 		_err: (error: E) => Oerr | PromiseLike<Oerr>
-	): Future<Result<T, Oerr>> {
-		return Future.resolve(this) as unknown as Future<Result<T, Oerr>>;
+	): FutureResult<T, Oerr> {
+		return new FutureResult(() => this._value);
 	}
 }
 
@@ -95,16 +89,12 @@ export class Err<T = undefined, E = unknown> extends Result<T, E> {
 	map_async<Ook, Oerr = E>(
 		_ok: (value: T) => Ook | PromiseLike<Ook>,
 		err?: (error: E) => Oerr | PromiseLike<Oerr>
-	): Future<Result<Ook, Oerr>> {
-		return new Future(async (resolve) => {
-			try {
-				if (err) {
-					return new Err(await err(this._error));
-				} else {
-					return this as unknown as Result<Ook, Oerr>;
-				}
-			} catch (error) {
-				resolve(new Err(error as Oerr));
+	): FutureResult<Ook, Oerr> {
+		return new FutureResult<Ook, Oerr>(async () => {
+			if (err) {
+				throw await err(this._error);
+			} else {
+				throw this._error;
 			}
 		});
 	}
@@ -115,7 +105,7 @@ export class Err<T = undefined, E = unknown> extends Result<T, E> {
 
 	map_err_async<Oerr>(
 		err: (error: E) => Oerr | PromiseLike<Oerr>
-	): Future<Result<T, Oerr>> {
+	): FutureResult<T, Oerr> {
 		return this.map_async(identity, err);
 	}
 }
