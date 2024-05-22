@@ -141,6 +141,10 @@ export class FutureResult<T, E = unknown> extends Future<Result<T, E>> {
 			)
 		);
 	}
+
+	unwrap(): Future<T> {
+		return this.then((result) => result.unwrap());
+	}
 }
 
 export default Result;
