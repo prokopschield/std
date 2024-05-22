@@ -5,7 +5,7 @@ export { Lock } from './classes/Lock';
 export { Pipeline, pipe } from './classes/Pipeline';
 export { ProceduralQueue } from './classes/ProceduralQueue';
 export { Queue } from './classes/Queue';
-export { Err, Ok, Result } from './classes/Result';
+export { Err, Ok, Result, FutureResult } from './classes/Result';
 export { Semaphore } from './classes/Semaphore';
 export { SerialQueue } from './classes/SerialQueue';
 export { SetMap } from './classes/SetMap';

@@ -120,11 +120,47 @@ export class Err<T = undefined, E = unknown> extends Result<T, E> {
 	}
 }
 
+export class FutureResult<T, E = unknown> extends Future<Result<T, E>> {
+	constructor(resolver: () => T | PromiseLike<T>) {
+		super(async (resolve) => {
+			try {
+				resolve(new Ok(await resolver()) as Result<T, E>);
+			} catch (error) {
+				resolve(new Err(error as E));
+			}
+		});
+	}
+
+	map_async<Ook, Oerr = E>(
+		ok: (value: T) => Ook | PromiseLike<Ook>,
+		err?: (error: E) => Oerr | PromiseLike<Oerr>
+	): FutureResult<Ook, Oerr> {
+		return new FutureResult<Ook, Oerr>(() =>
+			this.then((result) =>
+				result.map_async(ok, err).then((result) => result.unwrap())
+			)
+		);
+	}
+
+	map_err_async<Oerr>(
+		err: (error: E) => Oerr | PromiseLike<Oerr>
+	): FutureResult<T, Oerr> {
+		return new FutureResult<T, Oerr>(() =>
+			this.then((result) =>
+				result.map_err_async(err).then((result) => result.unwrap())
+			)
+		);
+	}
+}
+
 export default Result;
 
-Object.defineProperties(Result, {
-	default: { get: () => Result },
-	Result: { get: () => Result },
-	Ok: { get: () => Ok },
-	Err: { get: () => Err },
-});
+for (const _ of [Result, FutureResult]) {
+	Object.defineProperties(_, {
+		default: { get: () => Result },
+		FuturResult: { get: () => FutureResult },
+		Result: { get: () => Result },
+		Ok: { get: () => Ok },
+		Err: { get: () => Err },
+	});
+}
