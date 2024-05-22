@@ -1,4 +1,5 @@
 export { CounterMap } from './classes/CounterMap';
+export { Fallible } from './classes/Fallible';
 export { Future } from './classes/Future';
 export { Generator } from './classes/Generator';
 export { Lock } from './classes/Lock';
