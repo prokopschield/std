@@ -148,7 +148,7 @@ export default Result;
 for (const _ of [Result, FutureResult]) {
 	Object.defineProperties(_, {
 		default: { get: () => Result },
-		FuturResult: { get: () => FutureResult },
+		FutureResult: { get: () => FutureResult },
 		Result: { get: () => Result },
 		Ok: { get: () => Ok },
 		Err: { get: () => Err },
