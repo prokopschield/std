@@ -18,7 +18,7 @@ export abstract class Result<T = undefined, E = unknown> {
 	): FutureResult<T, Oerr>;
 }
 
-export class Ok<T = undefined, E = unknown> extends Result<T, E> {
+export class OkResult<T = undefined, E = unknown> extends Result<T, E> {
 	protected _value: T;
 
 	constructor(value: T) {
@@ -37,8 +37,8 @@ export class Ok<T = undefined, E = unknown> extends Result<T, E> {
 	map<Ook, Oerr = E>(
 		ok: (value: T) => Ook,
 		_err?: (error: E) => Oerr
-	): Ok<Ook, Oerr> {
-		return new Ok(ok(this._value));
+	): OkResult<Ook, Oerr> {
+		return new OkResult(ok(this._value));
 	}
 
 	map_async<Ook, Oerr = E>(
@@ -48,8 +48,8 @@ export class Ok<T = undefined, E = unknown> extends Result<T, E> {
 		return new FutureResult(() => ok(this._value));
 	}
 
-	map_err<Oerr>(_err: (error: E) => Oerr): Ok<T, Oerr> {
-		return this as unknown as Ok<T, Oerr>;
+	map_err<Oerr>(_err: (error: E) => Oerr): OkResult<T, Oerr> {
+		return this as unknown as OkResult<T, Oerr>;
 	}
 
 	map_err_async<Oerr>(
@@ -59,7 +59,7 @@ export class Ok<T = undefined, E = unknown> extends Result<T, E> {
 	}
 }
 
-export class Err<T = undefined, E = unknown> extends Result<T, E> {
+export class ErrResult<T = undefined, E = unknown> extends Result<T, E> {
 	protected _error: E;
 
 	constructor(error: E) {
@@ -80,7 +80,7 @@ export class Err<T = undefined, E = unknown> extends Result<T, E> {
 		err?: (error: E) => Oerr
 	): Result<Ook, Oerr> {
 		if (err) {
-			return new Err(err(this._error));
+			return new ErrResult(err(this._error));
 		} else {
 			return this as unknown as Result<Ook, Oerr>;
 		}
@@ -114,9 +114,9 @@ export class FutureResult<T, E = unknown> extends Future<Result<T, E>> {
 	constructor(resolver: () => T | PromiseLike<T>) {
 		super(async (resolve) => {
 			try {
-				resolve(new Ok(await resolver()) as Result<T, E>);
+				resolve(new OkResult(await resolver()) as Result<T, E>);
 			} catch (error) {
-				resolve(new Err(error as E));
+				resolve(new ErrResult(error as E));
 			}
 		});
 	}
@@ -146,6 +146,18 @@ export class FutureResult<T, E = unknown> extends Future<Result<T, E>> {
 		return this.then((result) => result.unwrap());
 	}
 }
+
+export const Ok = new Proxy(OkResult, {
+	apply(_ok, _this, [value]) {
+		return new OkResult(value);
+	},
+}) as unknown as typeof OkResult & (<T = void>(value: T) => OkResult<T>);
+
+export const Err = new Proxy(ErrResult, {
+	apply(_err, _this, [error]) {
+		return new ErrResult(error);
+	},
+}) as unknown as typeof ErrResult & (<E = void>(error: E) => ErrResult<E>);
 
 export default Result;
 
