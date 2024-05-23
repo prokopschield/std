@@ -147,17 +147,20 @@ export class FutureResult<T, E = unknown> extends Future<Result<T, E>> {
 	}
 }
 
+export type OkFactory = <T, E = never>(value: T) => OkResult<T, E>;
+export type ErrFactory = <T = never, E = void>(error: E) => ErrResult<T, E>;
+
 export const Ok = new Proxy(OkResult, {
 	apply(_ok, _this, [value]) {
 		return new OkResult(value);
 	},
-}) as unknown as typeof OkResult & (<T = void>(value: T) => OkResult<T>);
+}) as unknown as typeof OkResult & OkFactory;
 
 export const Err = new Proxy(ErrResult, {
 	apply(_err, _this, [error]) {
 		return new ErrResult(error);
 	},
-}) as unknown as typeof ErrResult & (<E = void>(error: E) => ErrResult<E>);
+}) as unknown as typeof ErrResult & ErrFactory;
 
 export default Result;
 
