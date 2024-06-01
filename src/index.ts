@@ -10,6 +10,7 @@ export { Err, Ok, Result, FutureResult } from './classes/Result';
 export { Semaphore } from './classes/Semaphore';
 export { SerialQueue } from './classes/SerialQueue';
 export { SetMap } from './classes/SetMap';
+export { Stack } from './classes/Stack';
 export { Timer } from './classes/Timer';
 
 export { assert } from './functions/assert';
