@@ -76,6 +76,9 @@ export function AsyncObject<Base extends AnyObj>(
 	};
 
 	const proxy = new Proxy(typeof base === 'function' ? base : resolver, {
+		has(_, key) {
+			return key in base;
+		},
 		get(_, key) {
 			return base[key as keyof Base];
 		},
