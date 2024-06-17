@@ -1,5 +1,6 @@
 import { AsyncTrap, asyncTrap } from '../functions/asyncTrap';
 import { identity } from '../functions/identity';
+import Future from './Future';
 import { Lock } from './Lock';
 
 const READ = Symbol('READ');
@@ -75,12 +76,40 @@ export function AsyncObject<Base extends AnyObj>(
 		}
 	};
 
+	const set = async <K extends keyof Base>(key: K, new_value: Base[K]) => {
+		base[key] = new_value;
+
+		const guard = await lock.wait_and_lock();
+
+		const future = Future.resolve(new_value).then((awaited) => {
+			if (base[key] !== new_value) {
+				return;
+			}
+
+			if (awaited == undefined) {
+				// awaited === undefined || awaited === null
+				return delete base[key];
+			}
+
+			if (typeof awaited === 'function' || typeof awaited === 'object') {
+				base[key] = asyncTrap(awaited);
+			} else {
+				base[key] = awaited;
+			}
+		});
+
+		future.finally(() => guard.release());
+	};
+
 	const proxy = new Proxy(typeof base === 'function' ? base : resolver, {
 		has(_, key) {
 			return key in base;
 		},
 		get(_, key) {
 			return base[key as keyof Base];
+		},
+		set(_, key, new_value) {
+			return set(key, new_value), true;
 		},
 	}) as AsyncObject<Base>;
 
