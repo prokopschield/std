@@ -19,7 +19,7 @@ export type AsyncObjectInvocable<Base extends AnyRec> = Base extends Function
 	: AsyncObjectLookup<Base, keyof Base>;
 
 export type AsyncObject<Rec extends AnyRec> = {
-	[Key in keyof Rec]: AsyncTrap<Key>;
+	[Key in keyof Rec]: Rec[Key] | AsyncTrap<Rec[Key]>;
 } & AsyncObjectInvocable<Rec>;
 
 export function AsyncObject<Base extends AnyObj>(
