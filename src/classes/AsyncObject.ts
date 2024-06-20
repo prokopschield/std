@@ -111,6 +111,27 @@ export function AsyncObject<Base extends AnyObj>(
 		set(_, key, new_value) {
 			return set(key, new_value), true;
 		},
+		defineProperty(_, property, attributes) {
+			return !!Object.defineProperty(base, property, attributes);
+		},
+		deleteProperty(_, key) {
+			return !!resolver(key, undefined);
+		},
+		getOwnPropertyDescriptor(_, key) {
+			return Object.getOwnPropertyDescriptor(base, key);
+		},
+		getPrototypeOf(_) {
+			return Object.getPrototypeOf(base);
+		},
+		isExtensible(_) {
+			return Object.isExtensible(base);
+		},
+		ownKeys(_) {
+			return Object.keys(base);
+		},
+		setPrototypeOf(_, proto) {
+			return Object.setPrototypeOf(base, proto);
+		},
 	}) as AsyncObject<Base>;
 
 	return proxy;
