@@ -61,7 +61,7 @@ export function AsyncObject<Base extends AnyObj>(
 
 			if (new_value === READ) {
 				return target[key_final as K];
-			} else if (new_value === null || new_value === undefined) {
+			} else if (new_value == undefined) {
 				delete target[key_final as K];
 			} else if (
 				typeof new_value === 'object' ||
