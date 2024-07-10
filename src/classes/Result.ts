@@ -16,6 +16,7 @@ export abstract class Result<T = undefined, E = unknown> {
 	abstract map_err_async<Oerr>(
 		err: (error: E) => Oerr | PromiseLike<Oerr>
 	): FutureResult<T, Oerr>;
+	abstract toJSON(): { ok: T } | { error: E };
 }
 
 export class OkResult<T = undefined, E = unknown> extends Result<T, E> {
@@ -56,6 +57,10 @@ export class OkResult<T = undefined, E = unknown> extends Result<T, E> {
 		_err: (error: E) => Oerr | PromiseLike<Oerr>
 	): FutureResult<T, Oerr> {
 		return new FutureResult(() => this._value);
+	}
+
+	toJSON() {
+		return { ok: this._value };
 	}
 }
 
@@ -107,6 +112,10 @@ export class ErrResult<T = undefined, E = unknown> extends Result<T, E> {
 		err: (error: E) => Oerr | PromiseLike<Oerr>
 	): FutureResult<T, Oerr> {
 		return this.map_async(identity, err);
+	}
+
+	toJSON() {
+		return { error: this._error };
 	}
 }
 
