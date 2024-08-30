@@ -11,9 +11,9 @@ export function asyncTransform<I, O>(
 			'then' in value &&
 			typeof value.then === 'function'
 		) {
-			return new Future<O>((resolve, reject) => {
-				value.then(transform).then(resolve, reject);
-			});
+			return new Future<I>((resolve, reject) => {
+				value.then(resolve, reject);
+			}).then(transform);
 		}
 
 		return Future.resolve(transform(value as I));
