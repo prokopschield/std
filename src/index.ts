@@ -18,6 +18,7 @@ export { assert } from './functions/assert';
 export { asyncFactory } from './functions/asyncFactory';
 export { asyncFlatMap } from './functions/asyncFlatMap';
 export { asyncTrap } from './functions/asyncTrap';
+export { asyncTransform } from './functions/asyncTransform';
 export { cacheAsyncFn } from './functions/cacheAsyncFn';
 export { cacheFn } from './functions/cacheFn';
 export { declareGlobal } from './functions/declareGlobal';
