@@ -2,7 +2,7 @@ import Future from '../classes/Future';
 
 export function asyncTransform<I, O>(
 	value: I | PromiseLike<I>,
-	transform: (value: I) => O | PromiseLike<O>
+	transform: (value: Awaited<I>) => O | PromiseLike<O>
 ): Future<O> {
 	try {
 		if (
@@ -16,7 +16,7 @@ export function asyncTransform<I, O>(
 			}).then(transform);
 		}
 
-		return Future.resolve(transform(value as I));
+		return Future.resolve(transform(value as Awaited<I>));
 	} catch (error) {
 		return Future.reject(error);
 	}
