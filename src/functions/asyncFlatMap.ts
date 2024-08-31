@@ -32,7 +32,10 @@ export async function asyncFlatMap<A, B>(
 	self: AsyncFlatMappable<A>,
 	transform: Transform<A, B>
 ): Promise<B[]> {
-	const items = await Promise.all(await self);
+	const awaited = await self;
+	const items = awaited?.[Symbol.iterator]
+		? await Promise.all(awaited)
+		: ([awaited] as [A]);
 
 	const transformed: Array<B | PromiseArray<B>> = [];
 
