@@ -7,7 +7,7 @@ export class Semaphore {
 
 	/** value is the initial number of allowed concurrent tasks */
 	constructor(value: bigint | number | string) {
-		this.value = Number(value);
+		this.value = Number(value) || 0;
 	}
 
 	/** increments semaphore */
