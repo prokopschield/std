@@ -1,6 +1,8 @@
 import identity from '../functions/identity';
 import Future from './Future';
 
+const symbol = Symbol.for('盾標準図書館結果');
+
 export abstract class Result<T = undefined, E = unknown> {
 	abstract unwrap(): T;
 	abstract into(): T | E;
@@ -17,36 +19,51 @@ export abstract class Result<T = undefined, E = unknown> {
 		err: (error: E) => Oerr | PromiseLike<Oerr>
 	): FutureResult<T, Oerr>;
 	abstract toJSON(): { ok: T } | { error: E };
+	protected abstract [symbol]: T | E;
+	static unwrap<T>(result: T | Result<T>): T {
+		if (result && typeof result === 'object' && symbol in result) {
+			return result.unwrap();
+		} else {
+			return result;
+		}
+	}
+	static from<T, E = never>(value: T | Result<T, E>): Result<T, unknown> {
+		try {
+			return Ok(Result.unwrap(value));
+		} catch (err) {
+			return Err(err);
+		}
+	}
 }
 
 export class OkResult<T = undefined, E = unknown> extends Result<T, E> {
-	protected _value: T;
+	protected [symbol]: T;
 
 	constructor(value: T) {
 		super();
-		this._value = value;
+		this[symbol] = value;
 	}
 
 	unwrap(): T {
-		return this._value;
+		return this[symbol];
 	}
 
 	into(): T {
-		return this._value;
+		return this[symbol];
 	}
 
 	map<Ook, Oerr = E>(
 		ok: (value: T) => Ook,
 		_err?: (error: E) => Oerr
 	): OkResult<Ook, Oerr> {
-		return new OkResult(ok(this._value));
+		return new OkResult(ok(this[symbol]));
 	}
 
 	map_async<Ook, Oerr = E>(
 		ok: (value: T) => Ook | PromiseLike<Ook>,
 		_err?: (error: E) => Oerr | PromiseLike<Oerr>
 	): FutureResult<Ook, Oerr> {
-		return new FutureResult(() => ok(this._value));
+		return new FutureResult(() => ok(this[symbol]));
 	}
 
 	map_err<Oerr>(_err: (error: E) => Oerr): OkResult<T, Oerr> {
@@ -56,28 +73,28 @@ export class OkResult<T = undefined, E = unknown> extends Result<T, E> {
 	map_err_async<Oerr>(
 		_err: (error: E) => Oerr | PromiseLike<Oerr>
 	): FutureResult<T, Oerr> {
-		return new FutureResult(() => this._value);
+		return new FutureResult(() => this[symbol]);
 	}
 
 	toJSON() {
-		return { ok: this._value };
+		return { ok: this[symbol] };
 	}
 }
 
 export class ErrResult<T = undefined, E = unknown> extends Result<T, E> {
-	protected _error: E;
+	protected [symbol]: E;
 
 	constructor(error: E) {
 		super();
-		this._error = error;
+		this[symbol] = error;
 	}
 
 	unwrap(): never {
-		throw this._error;
+		throw this[symbol];
 	}
 
 	into(): E {
-		return this._error;
+		return this[symbol];
 	}
 
 	map<Ook, Oerr = E>(
@@ -85,7 +102,7 @@ export class ErrResult<T = undefined, E = unknown> extends Result<T, E> {
 		err?: (error: E) => Oerr
 	): Result<Ook, Oerr> {
 		if (err) {
-			return new ErrResult(err(this._error));
+			return new ErrResult(err(this[symbol]));
 		} else {
 			return this as unknown as Result<Ook, Oerr>;
 		}
@@ -97,9 +114,9 @@ export class ErrResult<T = undefined, E = unknown> extends Result<T, E> {
 	): FutureResult<Ook, Oerr> {
 		return new FutureResult<Ook, Oerr>(async () => {
 			if (err) {
-				throw await err(this._error);
+				throw await err(this[symbol]);
 			} else {
-				throw this._error;
+				throw this[symbol];
 			}
 		});
 	}
@@ -115,7 +132,7 @@ export class ErrResult<T = undefined, E = unknown> extends Result<T, E> {
 	}
 
 	toJSON() {
-		return { error: this._error };
+		return { error: this[symbol] };
 	}
 }
 
