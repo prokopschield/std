@@ -15,6 +15,7 @@ export { Stack } from './classes/Stack';
 export { Timer } from './classes/Timer';
 
 export { assert } from './functions/assert';
+export { asyncCallback } from './functions/asyncCallback';
 export { asyncFactory } from './functions/asyncFactory';
 export { asyncFlatMap } from './functions/asyncFlatMap';
 export { asyncTrap } from './functions/asyncTrap';
