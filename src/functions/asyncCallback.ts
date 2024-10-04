@@ -2,6 +2,11 @@ import { Err, Ok, Result } from '../classes/Result';
 
 export type Async<T> = T | Result<Async<T>> | PromiseLike<Async<T>>;
 
+/**
+ * Call a callback with the result of an async operation
+ * @param value a Future, FutureResult, Promise, or Result
+ * @param callback (result) => result.map((value) => {...}, (error) => {...})
+ */
 export function asyncCallback<T>(
 	value: Async<T>,
 	callback: (value: Result<T>) => any
