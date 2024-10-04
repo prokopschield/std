@@ -39,17 +39,15 @@ export async function asyncFlatMap<A, B>(
 
 	const transformed: Array<B | PromiseArray<B>> = [];
 
-	await Promise.all(
-		items.map(async (item) => {
-			if (Array.isArray(item)) {
-				for (const subitem of item.map(transform)) {
-					transformed.push(await subitem);
-				}
-			} else {
-				transformed.push(await transform(item));
+	for (const item of items) {
+		if (Array.isArray(item)) {
+			for (const subitem of item.map(transform)) {
+				transformed.push(await subitem);
 			}
-		})
-	);
+		} else {
+			transformed.push(await transform(item));
+		}
+	}
 
 	const final = new Array<B>();
 
