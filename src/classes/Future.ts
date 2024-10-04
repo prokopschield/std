@@ -4,8 +4,12 @@ import asyncFlatMap, {
 	PromiseArray,
 } from '../functions/asyncFlatMap';
 import identity from '../functions/identity';
+import noop from '../functions/noop';
+import once from '../functions/once';
 
 export interface FutureOptions<T> {
+	/** Should the executor only be called when this Future is awaited? */
+	lazy?: boolean;
 	/** how often .poll() is called */
 	interval?: number;
 	/** @returns a value which resolves this Future, or undefined */
@@ -109,6 +113,10 @@ export class Future<T> implements Promise<T> {
 		executor_or_promise: Executor<T> | PromiseLike<T>,
 		options: FutureOptions<T> = {}
 	) {
+		if (options.lazy) {
+			return new LazyFuture(executor_or_promise, options);
+		}
+
 		if (typeof executor_or_promise === 'function') {
 			this.init_with_executor(executor_or_promise);
 		} else {
@@ -256,9 +264,51 @@ export class Future<T> implements Promise<T> {
 	}
 }
 
+export class LazyFuture<T> extends Future<T> {
+	protected init;
+	callbacks = new Set<(self: Future<T>) => any>();
+
+	constructor(
+		executor_or_promise: Executor<T> | PromiseLike<T>,
+		options: FutureOptions<T> = {}
+	) {
+		super(noop);
+
+		this.init = once(() => {
+			const future = new Future<T>(executor_or_promise, {
+				...options,
+				lazy: false,
+			});
+
+			future.then(
+				(value) => this.resolve(value),
+				(error) => this.reject(error)
+			);
+
+			return future;
+		});
+	}
+
+	then<TResult1 = T, TResult2 = never>(
+		onfulfilled?:
+			| ((value: Awaited<T>) => TResult1 | PromiseLike<TResult1>)
+			| null
+			| undefined,
+		onrejected?:
+			| ((reason: any) => TResult2 | PromiseLike<TResult2>)
+			| null
+			| undefined
+	): Future<TResult1 | TResult2> {
+		setTimeout(this.init);
+
+		return super.then(onfulfilled, onrejected);
+	}
+}
+
 export default Future;
 
 Object.defineProperties(Future, {
 	default: { get: () => Future },
 	Future: { get: () => Future },
+	LazyFuture: { get: () => LazyFuture },
 });
