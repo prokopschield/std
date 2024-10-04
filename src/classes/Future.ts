@@ -56,7 +56,7 @@ export class Future<T> implements Promise<T> {
 					} else if (onfulfilled) {
 						resolve(onfulfilled(self.value!));
 					} else {
-						resolve(self.value as any);
+						resolve(self.value as TResult1);
 					}
 				} catch (error) {
 					reject(error);
