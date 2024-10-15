@@ -225,6 +225,29 @@ export class Future<T> implements Promise<T> {
 		});
 	}
 
+	/** calls a callback with an awaited value */
+	static callback<T>(value: T, callback: (_value: Awaited<T>) => any): void;
+	/** calls a callback after awaiting a Future */
+	static callback<T>(value: Future<T>, callback: (_value: T) => any): void;
+	/** calls a callback after awaiting a Promise */
+	static callback<T>(value: Promise<T>, callback: (_value: T) => any): void;
+	/** calls a callback after awaiting a Promise-Like object */
+	static callback<T>(
+		value: T | { then: (_callback: (_value: T) => any) => any },
+		callback: (_value: T) => any
+	): void {
+		if (
+			value &&
+			(typeof value === 'object' || typeof value === 'function') &&
+			'then' in value &&
+			typeof value.then === 'function'
+		) {
+			value.then((value) => Future.callback<T>(value, callback));
+		} else if (typeof callback === 'function') {
+			callback(value as T);
+		}
+	}
+
 	_interval?: number;
 	_poll?: FutureOptions<T>['poll'];
 	_poll_timeout?: ReturnType<typeof setTimeout>;
