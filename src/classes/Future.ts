@@ -191,7 +191,7 @@ export class Future<T> implements Promise<T> {
 		}
 	}
 
-	protected async reject(reason: any) {
+	protected reject(reason: any) {
 		if (!this.rejected) {
 			this.reason = reason;
 			this.rejected = true;
