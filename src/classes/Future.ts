@@ -26,6 +26,11 @@ export type Executor<T> = (
 
 export const VoidExecutor: Executor<void> = (resolve) => resolve();
 
+export type ErrorHandler = (_error: unknown) => any;
+export type FutureCallback<T> = (_value: Awaited<T>) => any;
+export type Then<T> = (_cb: FutureCallback<T>, _err: ErrorHandler) => any;
+export type Thennable<T> = { then: Then<T> };
+
 export class Future<T> implements Promise<T> {
 	value: Awaited<T> | undefined;
 	reason: any;
@@ -226,25 +231,53 @@ export class Future<T> implements Promise<T> {
 	}
 
 	/** calls a callback with an awaited value */
-	static callback<T>(value: T, callback: (_value: Awaited<T>) => any): void;
-	/** calls a callback after awaiting a Future */
-	static callback<T>(value: Future<T>, callback: (_value: T) => any): void;
-	/** calls a callback after awaiting a Promise */
-	static callback<T>(value: Promise<T>, callback: (_value: T) => any): void;
-	/** calls a callback after awaiting a Promise-Like object */
 	static callback<T>(
-		value: T | { then: (_callback: (_value: T) => any) => any },
-		callback: (_value: T) => any
+		value: T,
+		callback?: FutureCallback<T>,
+		errorHandler?: ErrorHandler
+	): void;
+
+	/** calls a callback after awaiting a Future */
+	static callback<T>(
+		value: Future<T>,
+		callback?: FutureCallback<T>,
+		errorHandler?: ErrorHandler
+	): void;
+
+	/** calls a callback after awaiting a Promise */
+	static callback<T>(
+		value: Promise<T>,
+		callback?: FutureCallback<T>,
+		errorHandler?: ErrorHandler
+	): void;
+
+	/** calls a callback after awaiting a Thennable object */
+	static callback<T>(
+		value: Thennable<T>,
+		callback: FutureCallback<T> = noop,
+		errorHandler: ErrorHandler = noop
 	): void {
-		if (
-			value &&
-			(typeof value === 'object' || typeof value === 'function') &&
-			'then' in value &&
-			typeof value.then === 'function'
-		) {
-			value.then((value) => Future.callback<T>(value, callback));
-		} else if (typeof callback === 'function') {
-			callback(value as T);
+		try {
+			if (
+				value &&
+				(typeof value === 'object' || typeof value === 'function') &&
+				'then' in value &&
+				typeof value.then === 'function'
+			) {
+				Future.callback(
+					value.then((value) => {
+						Future.callback<T>(value, callback, errorHandler);
+					}, errorHandler)
+				);
+			} else if (callback !== noop) {
+				Future.callback(
+					callback(value as Awaited<T>),
+					noop,
+					errorHandler
+				);
+			}
+		} catch (error) {
+			errorHandler(error);
 		}
 	}
 
