@@ -255,6 +255,34 @@ export class FutureResult<T, E = unknown> extends Future<Result<T, E>> {
 	or_else_async<A>(err: (error: E) => A | PromiseLike<A>) {
 		return this.then((result) => result.or_else(err), err);
 	}
+
+	map_or<Ook, A>(
+		ok: (value: T) => Ook,
+		value: A | PromiseLike<A>
+	): Future<Ook | A> {
+		return this.map_async(ok).or(value);
+	}
+
+	map_or_else<Ook, A>(
+		ok: (value: T) => Ook,
+		err: (error: E) => A
+	): Future<Ook | A> {
+		return this.map_async(ok).or_else(err);
+	}
+
+	map_or_async<Ook, A>(
+		ok: (value: T) => Ook | PromiseLike<Ook>,
+		value: A | PromiseLike<A>
+	): Future<Ook | A> {
+		return this.map_async(ok).or(value);
+	}
+
+	map_or_else_async<Ook, A>(
+		ok: (value: T) => Ook | PromiseLike<Ook>,
+		err: (error: E) => A | PromiseLike<A>
+	): Future<Ook | A> {
+		return this.map_async(ok).or_else_async(err);
+	}
 }
 
 export type OkFactory = <T, E = never>(value: T) => OkResult<T, E>;
