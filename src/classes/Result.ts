@@ -46,6 +46,23 @@ export abstract class Result<T = undefined, E = unknown> {
 	abstract or_else_async<A>(
 		err: (error: E) => A | PromiseLike<A>
 	): Future<T | A>;
+	abstract map_or<Ook, A>(ok: (value: T) => Ook, value: A): Ook | A;
+	abstract map_or_else<Ook, A>(
+		ok: (value: T) => Ook,
+		err: (error: E) => A
+	): Ook | A;
+	map_or_async<Ook, A>(
+		ok: (value: T) => Ook | PromiseLike<Ook>,
+		value: A | PromiseLike<A>
+	): Future<Ook | A> {
+		return this.map_async(ok).or(value);
+	}
+	map_or_else_async<Ook, A>(
+		ok: (value: T) => Ook | PromiseLike<Ook>,
+		err: (error: E) => A | PromiseLike<A>
+	): Future<Ook | A> {
+		return this.map_async(ok).or_else_async(err);
+	}
 }
 
 export class OkResult<T = undefined, E = unknown> extends Result<T, E> {
@@ -102,6 +119,14 @@ export class OkResult<T = undefined, E = unknown> extends Result<T, E> {
 
 	or_else_async<A>() {
 		return new Future<T | A>(() => this[symbol]);
+	}
+
+	map_or<Ook, A>(ok: (value: T) => Ook): Ook | A {
+		return ok(this[symbol]);
+	}
+
+	map_or_else<Ook, A>(ok: (value: T) => Ook): Ook | A {
+		return ok(this[symbol]);
 	}
 }
 
@@ -169,6 +194,14 @@ export class ErrResult<T = undefined, E = unknown> extends Result<T, E> {
 
 	or_else_async<A>(err: (error: E) => A | PromiseLike<A>): Future<T | A> {
 		return new Future((resolve) => resolve(err(this[symbol])));
+	}
+
+	map_or<Ook, A>(_ok: (value: T) => Ook, value: A): Ook | A {
+		return value;
+	}
+
+	map_or_else<Ook, A>(_ok: (value: T) => Ook, err: (error: E) => A): Ook | A {
+		return err(this[symbol]);
 	}
 }
 
