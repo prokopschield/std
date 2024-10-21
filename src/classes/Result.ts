@@ -208,7 +208,7 @@ export class FutureResult<T, E = unknown> extends Future<Result<T, E>> {
 		return this.then((result) => result.unwrap());
 	}
 
-	or<A>(value: A) {
+	or<A>(value: A | PromiseLike<A>): Future<T | A> {
 		return this.then(
 			(result) => result.or(value),
 			() => value
