@@ -34,6 +34,13 @@ export abstract class Result<T = undefined, E = unknown> {
 			return Err(err);
 		}
 	}
+	static try<T>(cb: () => T): Result<T, unknown> {
+		try {
+			return Ok(cb());
+		} catch (err) {
+			return Err(err);
+		}
+	}
 	abstract or<A>(value: A): T | A;
 	abstract or_else<A>(err: (error: E) => A): T | A;
 	abstract or_else_async<A>(
