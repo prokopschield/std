@@ -13,7 +13,7 @@ export interface FutureOptions<T> {
 	/** how often .poll() is called */
 	interval?: number;
 	/** @returns a value which resolves this Future, or undefined */
-	poll?: () => void | PromiseLike<T | undefined>;
+	poll?: () => undefined | PromiseLike<T | undefined>;
 	timeout?: number;
 }
 
