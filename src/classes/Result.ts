@@ -24,7 +24,7 @@ export abstract class Result<T = undefined, E = unknown> {
 		if (result && typeof result === 'object' && symbol in result) {
 			return result.unwrap();
 		} else {
-			return result;
+			return result as T;
 		}
 	}
 	static from<T, E = never>(value: T | Result<T, E>): Result<T, unknown> {
