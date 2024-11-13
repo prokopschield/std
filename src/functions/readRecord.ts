@@ -1,8 +1,7 @@
 /**
- * Read a property of a record, or return the first argument
+ * Read a property of a record
  *
  * `readRecord`(`{ foo: "bar" }`, `"foo"`) -> `"bar"`
- * `readRecord`(`"bar"`, `"foo"`) -> `"bar"`
  *
  * @param record the record you want to read from
  * @param key the key which you wish to read
@@ -12,12 +11,8 @@ export function readRecord<
 	Tkey extends keyof Trecord,
 	Tvalue extends Trecord[Tkey],
 	Trecord extends Record<Tkey, Tvalue>
->(record: Trecord, key: Tkey): Trecord[Tkey] {
-	if (record && typeof record === 'object') {
-		return record[key];
-	}
-
-	return record;
+>(record: Trecord | undefined, key: Tkey): Trecord[Tkey] | undefined {
+	return record?.[key];
 }
 
 export default readRecord;
