@@ -310,13 +310,13 @@ export const Ok = new Proxy(OkResult, {
 	apply(_ok, _this, [value]) {
 		return new OkResult(value);
 	},
-}) as unknown as typeof OkResult & OkFactory;
+}) as unknown as typeof OkResult & OkFactory & (() => OkResult);
 
 export const Err = new Proxy(ErrResult, {
 	apply(_err, _this, [error]) {
 		return new ErrResult(error);
 	},
-}) as unknown as typeof ErrResult & ErrFactory;
+}) as unknown as typeof ErrResult & ErrFactory & (() => ErrResult);
 
 export default Result;
 
