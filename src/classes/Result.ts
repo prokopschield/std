@@ -4,6 +4,8 @@ import Future from './Future';
 const symbol = Symbol.for('盾標準図書館結果');
 
 export abstract class Result<T = undefined, E = unknown> {
+	abstract is_ok(): this is OkResult<T, E>;
+	abstract is_err(): this is ErrResult<T, E>;
 	abstract unwrap(): T;
 	abstract into(): T | E;
 	abstract map<Ook, Oerr = E>(
@@ -73,6 +75,14 @@ export class OkResult<T = undefined, E = unknown> extends Result<T, E> {
 		this[symbol] = value;
 	}
 
+	is_ok(): this is OkResult<T, E> {
+		return true;
+	}
+
+	is_err(): this is ErrResult<T, E> {
+		return false;
+	}
+
 	unwrap(): T {
 		return this[symbol];
 	}
@@ -136,6 +146,14 @@ export class ErrResult<T = undefined, E = unknown> extends Result<T, E> {
 	constructor(error: E) {
 		super();
 		this[symbol] = error;
+	}
+
+	is_ok(): this is OkResult<T, E> {
+		return false;
+	}
+
+	is_err(): this is ErrResult<T, E> {
+		return true;
 	}
 
 	unwrap(): never {
