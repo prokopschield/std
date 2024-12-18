@@ -30,6 +30,8 @@ export { delay } from './functions/delay';
 export { extend } from './functions/extend';
 export { filterUsername } from './functions/filterUsername';
 export { identity } from './functions/identity';
+export { iterateAsync } from './functions/iterateAsync';
+export { iterateSync } from './functions/iterateSync';
 export { makeUnawaitable } from './functions/makeUnawaitable';
 export { noop } from './functions/noop';
 export { omit } from './functions/omit';
