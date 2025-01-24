@@ -1,25 +1,27 @@
+import { symbol } from './once';
+
 export function onceAsync<T>(
 	fn: () => Promise<T>,
 	thisArg?: any
 ): () => Promise<T> {
-	let value: T | Promise<T> | undefined = undefined;
+	let value: T | Promise<T> | typeof symbol = symbol;
 
 	const awaiter = async () => {
 		try {
 			value = await value;
 		} catch {
-			value = undefined;
+			value = symbol;
 		}
 	};
 
 	const cfn = async (): Promise<T> => {
-		if (value === undefined) {
+		if (value === symbol) {
 			value = fn.call(thisArg);
 
 			setTimeout(awaiter);
 		}
 
-		return value;
+		return value as T | Promise<T>;
 	};
 
 	return cfn;
