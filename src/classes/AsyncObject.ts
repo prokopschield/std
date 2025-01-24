@@ -11,7 +11,7 @@ export type AnyObj = AnyRec | (Function & AnyRec);
 
 export type AsyncObjectLookup<Rec extends AnyRec, Key extends keyof Rec> = (
 	key: Key,
-	new_value?: Rec[Key]
+	new_value?: Rec[Key],
 ) => Promise<Rec[Key]>;
 
 export type AsyncObjectInvocable<Base extends AnyRec> = Base extends Function
@@ -23,13 +23,13 @@ export type AsyncObject<Rec extends AnyRec> = {
 } & AsyncObjectInvocable<Rec>;
 
 export function AsyncObject<Base extends AnyObj>(
-	base: Base
+	base: Base,
 ): AsyncObject<Base> {
 	const lock = new Lock();
 
 	const resolver = async function AsyncObjectResolver<K extends keyof Base>(
 		raw_key: K,
-		raw_value: Base[K] | PromiseLike<Base[K]> | typeof READ = READ
+		raw_value: Base[K] | PromiseLike<Base[K]> | typeof READ = READ,
 	) {
 		const guard = await lock.wait_and_lock();
 
