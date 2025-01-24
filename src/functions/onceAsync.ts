@@ -19,7 +19,7 @@ export function onceAsync<T>(
 			setTimeout(awaiter);
 		}
 
-		return value;
+		return value!;
 	};
 
 	return cfn;

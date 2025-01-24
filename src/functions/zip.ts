@@ -13,7 +13,7 @@ export function* Iterator<T>(array: Iterable<T>) {
 export function* Zipper<T>(...arrays: Array<Iterable<T>>) {
 	const iterators = arrays.map(Iterator);
 	let done_counter = 0;
-	let return_array = [];
+	let return_array: T[] = [];
 
 	for (; done_counter != iterators.length; return_array = []) {
 		done_counter = 0;

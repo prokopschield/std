@@ -6,7 +6,7 @@ export function once<T>(fn: () => T, thisArg?: any): () => T {
 			value = fn.call(thisArg);
 		}
 
-		return value;
+		return value!;
 	};
 
 	return cfn;
