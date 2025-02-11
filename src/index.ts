@@ -14,6 +14,8 @@ export { SetMap } from './classes/SetMap';
 export { Stack } from './classes/Stack';
 export { Timer } from './classes/Timer';
 
+export { atomic } from './decorators/atomic';
+
 export { assert } from './functions/assert';
 export { asyncCallback } from './functions/asyncCallback';
 export { asyncFactory } from './functions/asyncFactory';
