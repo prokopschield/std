@@ -297,7 +297,7 @@ export class Future<T> implements Promise<T> {
 	 * ```
 	 * Many [Node APIs](https://docs.nodejs.org/) and [old npm packages](https://npmjs.com/package/imap) behave like this.
 	 */
-	static fromCallback<T, E>(
+	static fromCallback<T, E = unknown>(
 		callback: (callback: (err: E, val: T) => void) => void
 	): Future<T>;
 
@@ -320,12 +320,12 @@ export class Future<T> implements Promise<T> {
 	 * ```
 	 * Many [Node APIs](https://docs.nodejs.org/) and [old npm packages](https://npmjs.com/package/imap) behave like this.
 	 */
-	static fromCallback<T, E>(
+	static fromCallback<T, E = unknown>(
 		thisArg: object,
 		callback: (callback: (err: E, val: T) => void) => void
 	): Future<T>;
 
-	static fromCallback<T, E>(
+	static fromCallback<T, E = unknown>(
 		thisArg: object | ((callback: (err: E, val: T) => void) => void),
 		callback?: (callback: (err: E, val: T) => void) => void
 	): Future<T> {
@@ -441,7 +441,7 @@ export class LazyFuture<T> extends Future<T> {
 	 * ```
 	 * Many [Node APIs](https://docs.nodejs.org/) and [old npm packages](https://npmjs.com/package/imap) behave like this.
 	 */
-	static fromCallback<T, E>(
+	static fromCallback<T, E = unknown>(
 		callback: (callback: (err: E, val: T) => void) => void
 	): LazyFuture<T>;
 
@@ -464,12 +464,12 @@ export class LazyFuture<T> extends Future<T> {
 	 * ```
 	 * Many [Node APIs](https://docs.nodejs.org/) and [old npm packages](https://npmjs.com/package/imap) behave like this.
 	 */
-	static fromCallback<T, E>(
+	static fromCallback<T, E = unknown>(
 		thisArg: object,
 		callback: (callback: (err: E, val: T) => void) => void
 	): LazyFuture<T>;
 
-	static fromCallback<T, E>(
+	static fromCallback<T, E = unknown>(
 		thisArg: object | ((callback: (err: E, val: T) => void) => void),
 		callback?: (callback: (err: E, val: T) => void) => void
 	): LazyFuture<T> {
