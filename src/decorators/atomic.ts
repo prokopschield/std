@@ -7,7 +7,7 @@ import { Lock } from '../classes/Lock';
  */
 export function atomic<A, R>(
 	method: (..._args: A[]) => R,
-	_ctx?: ClassMethodDecoratorContext
+	_ctx?: any
 ): (...args: A[]) => Promise<Awaited<R>> {
 	const lock = new Lock();
 

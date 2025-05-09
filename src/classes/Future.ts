@@ -281,6 +281,71 @@ export class Future<T> implements Promise<T> {
 		}
 	}
 
+	/**
+	 * Transforms a callback consumer call into a `Future`.
+	 * # Usage
+	 * ```js
+	 * function myFunction(callback) {
+	 *   if (condition) {
+	 *     callback(null, "Success")
+	 *   } else {
+	 *     callback("Error")
+	 *   }
+	 * }
+	 *
+	 * const future = Future.fromCallback(myFunction)
+	 * ```
+	 * Many [Node APIs](https://docs.nodejs.org/) and [old npm packages](https://npmjs.com/package/imap) behave like this.
+	 */
+	static fromCallback<T, E = unknown>(
+		callback: (callback: (err: E, val: T) => void) => void
+	): Future<T>;
+
+	/**
+	 * Transforms a callback consumer call into a `Future`.
+	 * # Usage
+	 * ```js
+	 * const myObject = {
+	 *   condition: sky.color === blue,
+	 *   myMethod(callback) {
+	 *     if (this.condition) {
+	 *       callback(null, "Success")
+	 *     } else {
+	 *       callback("Error")
+	 *     }
+	 *   }
+	 * }
+	 *
+	 * const future = Future.fromCallback(myObject, myObject.myMethod)
+	 * ```
+	 * Many [Node APIs](https://docs.nodejs.org/) and [old npm packages](https://npmjs.com/package/imap) behave like this.
+	 */
+	static fromCallback<T, E = unknown>(
+		thisArg: object,
+		callback: (callback: (err: E, val: T) => void) => void
+	): Future<T>;
+
+	static fromCallback<T, E = unknown>(
+		thisArg: object | ((callback: (err: E, val: T) => void) => void),
+		callback?: (callback: (err: E, val: T) => void) => void
+	): Future<T> {
+		return new Future<T>((resolve, reject) => {
+			const resolver = (err: E, val: T) => {
+				err ? reject(err) : resolve(val);
+			};
+
+			if (typeof callback === 'function') {
+				callback.call(thisArg, resolver);
+			} else if (typeof thisArg === 'function') {
+				thisArg(resolver);
+			} else {
+				throw new TypeError(
+					`Future.fromCallback(${thisArg}) is not valid.`
+				);
+			}
+		});
+	}
+
 	_interval?: number;
 	_poll?: FutureOptions<T>['poll'];
 	_poll_timeout?: ReturnType<typeof setTimeout>;
@@ -358,6 +423,71 @@ export class LazyFuture<T> extends Future<T> {
 		setTimeout(this.init);
 
 		return super.then(onfulfilled, onrejected);
+	}
+
+	/**
+	 * Transforms a callback consumer call into a `LazyFuture`.
+	 * # Usage
+	 * ```js
+	 * function myFunction(callback) {
+	 *   if (condition) {
+	 *     callback(null, "Success")
+	 *   } else {
+	 *     callback("Error")
+	 *   }
+	 * }
+	 *
+	 * const future = LazyFuture.fromCallback(myFunction)
+	 * ```
+	 * Many [Node APIs](https://docs.nodejs.org/) and [old npm packages](https://npmjs.com/package/imap) behave like this.
+	 */
+	static fromCallback<T, E = unknown>(
+		callback: (callback: (err: E, val: T) => void) => void
+	): LazyFuture<T>;
+
+	/**
+	 * Transforms a callback consumer call into a `LazyFuture`.
+	 * # Usage
+	 * ```js
+	 * const myObject = {
+	 *   condition: sky.color === blue,
+	 *   myMethod(callback) {
+	 *     if (this.condition) {
+	 *       callback(null, "Success")
+	 *     } else {
+	 *       callback("Error")
+	 *     }
+	 *   }
+	 * }
+	 *
+	 * const future = LazyFuture.fromCallback(myObject, myObject.myMethod)
+	 * ```
+	 * Many [Node APIs](https://docs.nodejs.org/) and [old npm packages](https://npmjs.com/package/imap) behave like this.
+	 */
+	static fromCallback<T, E = unknown>(
+		thisArg: object,
+		callback: (callback: (err: E, val: T) => void) => void
+	): LazyFuture<T>;
+
+	static fromCallback<T, E = unknown>(
+		thisArg: object | ((callback: (err: E, val: T) => void) => void),
+		callback?: (callback: (err: E, val: T) => void) => void
+	): LazyFuture<T> {
+		return new LazyFuture<T>((resolve, reject) => {
+			const resolver = (err: E, val: T) => {
+				err ? reject(err) : resolve(val);
+			};
+
+			if (typeof callback === 'function') {
+				callback.call(thisArg, resolver);
+			} else if (typeof thisArg === 'function') {
+				thisArg(resolver);
+			} else {
+				throw new TypeError(
+					`LazyFuture.fromCallback(${thisArg}) is not valid.`
+				);
+			}
+		});
 	}
 }
 
