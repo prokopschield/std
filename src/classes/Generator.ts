@@ -1,4 +1,4 @@
-export class PsGenerator<type> implements Generator<type, type, type> {
+export class PsGenerator<type> {
 	generator: Generator<type, type, type>;
 	queue = new Array<type>();
 	constructor(fn: () => type) {
