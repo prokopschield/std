@@ -46,5 +46,6 @@ export { sanitizeHeaders } from './functions/sanitizeHeaders';
 export { sanitizeRecord } from './functions/sanitizeRecord';
 export { shellEscape } from './functions/shellEscape';
 export { timestamp } from './functions/timestamp';
-export { Unawaitable, unawaitable } from './functions/unawaitable';
+export { unawaitable } from './functions/unawaitable';
+export type { Unawaitable } from './functions/unawaitable';
 export { Iterator, Zipper, zip } from './functions/zip';
