@@ -1,4 +1,5 @@
-import { asyncFactory, FakePromise } from './asyncFactory';
+import { asyncFactory } from './asyncFactory';
+import type { FakePromise } from './asyncFactory';
 
 export type Trappable = object | Function;
 export type AsyncTrap<T> = T & FakePromise<T>;

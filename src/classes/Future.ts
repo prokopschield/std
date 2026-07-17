@@ -1,4 +1,5 @@
-import asyncFlatMap, {
+import asyncFlatMap from '../functions/asyncFlatMap';
+import type {
 	Transform,
 	AsyncMemberNP,
 	PromiseArray,

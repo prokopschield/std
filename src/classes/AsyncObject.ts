@@ -1,4 +1,5 @@
-import { AsyncTrap, asyncTrap } from '../functions/asyncTrap';
+import { asyncTrap } from '../functions/asyncTrap';
+import type { AsyncTrap } from '../functions/asyncTrap';
 import { identity } from '../functions/identity';
 import Future from './Future';
 import { Lock } from './Lock';
