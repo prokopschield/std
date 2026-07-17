@@ -23,7 +23,7 @@ export function asyncFactory<T>(value: T, toStringTag = TAG): FakePromise<T> {
 			return value;
 		},
 		[Symbol.toStringTag]: toStringTag,
-	};
+	} as FakePromise<T>;
 }
 
 export default asyncFactory;
